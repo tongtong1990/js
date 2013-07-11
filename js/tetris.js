@@ -61,7 +61,7 @@ var tetris = {
     tetris.block_width = tetris.page.offsetWidth * tetris.block_width_standard;
     // Calculate the board size of the game
     tetris.screen_width = tetris.block_width * tetris.cols;
-    tetris.screen_height = tetris.block_width * tetris.rows;
+    tetris.screen_height = tetris.block_width * (tetris.rows - 1);
     // Calcualte scale
     tetris.scale = tetris.block_width / tetris.image_width;
 
@@ -75,7 +75,7 @@ var tetris = {
     // Blocks: background
     tetris.layer_block = new Kinetic.Layer();
     tetris.layer_snake = new Kinetic.Layer();
-    for (var i = 0; i < tetris.rows; i++) {
+    for (var i = 0; i < tetris.rows - 1; i++) {
       tetris.display_block[i] = [];
       for (var j = 0; j < tetris.cols; j++) {
         // Black square
