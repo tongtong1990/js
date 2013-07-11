@@ -63,6 +63,7 @@
 
 var ids = new Array();
 var cnt = 0;
+var self_img_id;
 
 function onLinkedInLoad() {
   IN.Event.on(IN, "auth", function() {onLinkedInLogin();});
@@ -97,6 +98,7 @@ function onLinkedInLogin() {
 }
 
 function setLoginBadge(profile){
+  self_img_id = "self";
   var profHTML = "";
   if(!profile){
     profHTML = "<p>you need to log in first";
