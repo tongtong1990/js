@@ -19,19 +19,16 @@ var tetris = {
   display_snake: [],
   snake_dirs: [0, 0, 0, 0, 0],
   head_dir: 0, // head direction, 0: right, 1: down, 2: left, 3: up.
-  shine_tab: [],
+  sources: { jeff: 'img/jeff.jpg', yyl: 'img/yyl.jpg' },
+  image_width: 238,
 
   // game infos
   state: null,
   board: [],
-  next_block: null,
-  next_block_pos: null,
-  block: null,
-  block_pos: null,
-  block_x: 0,
-  block_y: 0,
-  rows: 15,
+  rows: 14,
   cols: 10,
+  screen_width: 0,
+  screen_height: 0,
 
 
   // speed
@@ -42,31 +39,12 @@ var tetris = {
   max_speed: 50,
   speed: 0,
 
-  // counters
-  level: 0,
-  score: 0,
-  best_score_tetris: 0,
-  lines: 0,
-  count_single: 0,
-  count_double: 0,
-  count_triple: 0,
-  count_tetris: 0,
-
   // touch/finger controls
   last_pos_x: 0,
   last_pos_y: 0,
   moving: false,
   time_touch_down: 0,
   finger_lock: false,
-
-  // keyboard controls
-  press_left: false,
-  press_right: false,
-  press_down: false,
-  press_drop: false,
-  press_rotate: false,
-
-  tab_probability: [1, 1, 1, 1, 1, 1, 1],
 
   init: function () {
     tetris.page = document.getElementById('page');
@@ -76,6 +54,8 @@ var tetris = {
     tetris.game_zone = document.getElementById('game_zone');
 
     tetris.block_width = tetris.page.offsetWidth * tetris.block_width_standard;
+    tetris.screen_width = tetris.block_width * tetris.cols;
+    tetris.screen_height = tetris.block_width * tetris.rows;
 
     tetris.stage = new Kinetic.Stage({
       container: 'game_zone',
@@ -99,14 +79,29 @@ var tetris = {
       };
     };
 
+    var images = {};
+    for (var src in tetris.sources) {
+      images[src] = new Image();
+      images[src].src = tetris.sources[src];
+
+      images[src].onload = function() {
+        tetris.display_snake[0].setFillPatternImage(images.jeff);
+        tetris.display_snake[0].setScale(tetris.block_width / tetris.image_width);
+        tetris.display_snake[1].setFillPatternImage(images.yyl);
+        tetris.display_snake[1].setScale(tetris.block_width / tetris.image_width);
+      };
+    }
+
     // Initialize the snake
     for (var j = 0; j < 5; j++) {
       tetris.display_snake[j] = new Kinetic.Rect({
         x: (5 - j) * tetris.block_width,
         y: 0,
-        width: tetris.block_width,
-        height: tetris.block_width,
-        fill: 'red'
+        width: tetris.image_width,
+        height: tetris.image_width
+        // width: tetris.block_width,
+        // height: tetris.block_width
+        // fill: images.jeff
       });
       tetris.layer_snake.add(tetris.display_snake[j]);
 
@@ -250,11 +245,11 @@ var tetris = {
     for (var i = 4; i >= 0; i--) {
       if (tetris.snake_dirs[i] == 0)
         tetris.display_snake[i].setX(tetris.display_snake[i].getAbsolutePosition().x + tetris.block_width);
-      else if (tetris.snake_dirs[i] == 1)
+      else if (tetris.snake_dirs[i] == 1 && tetris.display_snake[0].getAbsolutePosition().y < tetris.screen_height)
         tetris.display_snake[i].setY(tetris.display_snake[i].getAbsolutePosition().y + tetris.block_width);
-      else if (tetris.snake_dirs[i] == 2)
+      else if (tetris.snake_dirs[i] == 2 && tetris.display_snake[0].getAbsolutePosition().x > 0)
         tetris.display_snake[i].setX(tetris.display_snake[i].getAbsolutePosition().x - tetris.block_width);
-      else if (tetris.snake_dirs[i] == 3)
+      else if (tetris.snake_dirs[i] == 3 && tetris.display_snake[0].getAbsolutePosition().y > 0)
         tetris.display_snake[i].setY(tetris.display_snake[i].getAbsolutePosition().y - tetris.block_width);
 
       if (i == 0) {
