@@ -1,4 +1,4 @@
-			var socket = io.connect('http://localhost:9999');
+			var socket = io.connect('http://172.19.196.93:9200');
 			var left_cnt = 0, right_cnt = 0;
 			function go_to_right_screen(tself_id, tright_id, snake_id){
 				socket.emit('break_wall',{self_id:tself_id, target_id:tright_id, snake_id:snake_id});
