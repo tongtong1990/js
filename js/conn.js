@@ -1,5 +1,4 @@
 			var socket = io.connect('http://localhost:9999');
-			var self_id = null, left_id = null, right_id = null;
 			var left_cnt = 0, right_cnt = 0;
 			function go_to_right_screen(tself_id, tright_id, snake_id){
 				socket.emit('break_wall',{self_id:tself_id, target_id:tright_id, snake_id:snake_id});
@@ -51,18 +50,18 @@
 				});
 
 				$(document).on('swiperight', function(e){
-					socket.emit('conn_left',{me:self_id});
+					socket.emit('conn_left',{me:tetris.self_id});
 					socket.on('conn_left_confirm', function(data){
-						self_id = data.self_id;
-						right_id = data.right_id;
+						tetris.self_id = data.self_id;
+						tetris.right_id = data.right_id;
 						alert('Left screen confirm');
 					});
 				});
 				$(document).on('swipeleft', function(e){
-					socket.emit('conn_right',{me:self_id});
+					socket.emit('conn_right',{me:tetris.self_id});
 					socket.on('conn_right_confirm',function(data){
-						self_id = data.self_id;
-						left_id = data.left_id;
+						tetris.self_id = data.self_id;
+						tetris.left_id = data.left_id;
 						alert('Right screen confirm');
 					});
 				})

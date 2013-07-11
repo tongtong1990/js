@@ -45,9 +45,9 @@ var tetris = {
   finger_lock: false,
 
   // id, left and right
-  id: 0,
-  left: 0,
-  right: 0,
+  self_id: 0,
+  left_id: 0,
+  right_id: 0,
   color_mappings: { 0: 'white', 1: 'blue', 2: 'red', 3: 'green', 4: 'yellow'},
   self_color: null,
 
