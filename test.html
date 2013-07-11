@@ -1,0 +1,80 @@
+
+<script type="text/javascript" src="http://platform.linkedin.com/in.js">
+  api_key: 2g5r8lbvdmqv
+  onLoad: onLinkedInLoad
+
+</script>
+
+
+<p>This example demonstrates how to retrieve a user's connections.  It also uses the LinkedIn auth events (load, login, logout) to control behavior.</p>
+
+<!-- NOTE: be sure to set onLoad: onLinkedInLoad -->
+<script type="text/javascript">
+
+var ids = {};
+var cnt = 0;
+
+function onLinkedInLoad() {
+  IN.Event.on(IN, "auth", function() {onLinkedInLogin();});
+  IN.Event.on(IN, "logout", function() {onLinkedInLogout();});
+}
+
+function onLinkedInLogout() {
+  ids = {};
+  cnt = 0;
+  setLoginBadge(false);
+  setConnections({}, {total:0});
+}
+
+function onLinkedInLogin() {
+  IN.API.Profile("me")
+    .fields(["id", "firstName", "lastName", "pictureUrl", "publicProfileUrl"])
+    .result(function(result){
+      ids = {};
+      cnt = 0;
+      setLoginBadge(result.values[0]);
+    }).error(function(err){
+      alert(err);
+    });
+  // here, we pass the fields as individual string parameters
+  IN.API.Connections("me")
+    .fields("id", "firstName", "lastName", "pictureUrl", "publicProfileUrl")
+    .result(function(result, metadata) {
+      setConnections(result.values, metadata);
+    });
+}
+
+function setLoginBadge(profile){
+  var profHTML = "";
+  if(!profile){
+    profHTML = "<p>you need to log in first";
+  }else{
+    var pictureUrl = profile.pictureUrl || "http://static02.linkedin.com/scds/common/u/img/icon/icon_no_photo_80x80.png";
+    profHTML = "<img align=\"baseline\" src=\"" + pictureUrl + "\"></a>";
+  }
+  document.getElementById("profiledata").innerHTML = profHTML;
+}
+
+function setConnections(connections) {
+  var connHTML = "<ul>";
+  for (id in connections) {
+    
+    /* picture url not always there, must be defensive */
+    if (connections[id].hasOwnProperty('pictureUrl')) {
+      connHTML = connHTML + "<img id=\"" + connections[id].id +"\" style=\"visibility:hidden\" align=\"baseline\" src=\"" + connections[id].pictureUrl + "\"></a>";
+      ids[cnt] = connections[id].id;
+      cnt ++;
+    }
+  }
+
+  connHTML = connHTML + "</ul>";
+  document.getElementById("connectionsdata").innerHTML = connHTML;
+}
+</script>
+<script type="IN/Login">
+<div id="connectionstest">
+  <p>Current Users Connections:</p>
+  <div id="profiledata"></div>
+  <div id="connectionsdata"></div>
+</div>
+</script>
