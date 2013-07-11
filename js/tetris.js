@@ -7,6 +7,8 @@ var tetris = {
   game_col: null,
   game_zone: null,
   messages: null,
+  bt_left: null,
+  bt_right: null,
 
   // display (kinetic)
   stage: null,
@@ -57,6 +59,16 @@ var tetris = {
     tetris.page_game = document.getElementById('page_game');
     tetris.game_col = document.getElementById('game_col');
     tetris.game_zone = document.getElementById('game_zone');
+
+    document.getElementById('bt_left').addEventListener('click', function() {
+      tetris.move_left();
+    });
+    document.getElementById('bt_right').addEventListener('click', function() {
+      tetris.move_right();
+    });
+
+
+    // $('#bt_left').click(function() {alert('');tetris.move_left()});
 
     tetris.block_width = tetris.page.offsetWidth * tetris.block_width_standard;
     // Calculate the board size of the game
@@ -306,6 +318,7 @@ var tetris = {
   },
 
   move_left: function () {
+    alert('left');
     if (tetris.head_dir[tetris.self_id] == 0)
       tetris.head_dir[tetris.self_id] = 3;
     else
