@@ -20,7 +20,7 @@ var tetris = {
   snake_dirs: [0, 0, 0, 0, 0],
   head_dir: 0, // head direction, 0: right, 1: down, 2: left, 3: up.
   sources: { jeff: 'img/jeff.jpg', yyl: 'img/yyl.jpg' },
-  image_width: 238,
+  image_width: 80,
 
   // game infos
   state: null,
@@ -80,7 +80,7 @@ var tetris = {
     };
 
     var images = {};
-    for (var src in tetris.sources) {
+    /*for (var src in tetris.sources) {
       images[src] = new Image();
       images[src].src = tetris.sources[src];
 
@@ -91,6 +91,7 @@ var tetris = {
         tetris.display_snake[1].setScale(tetris.block_width / tetris.image_width);
       };
     }
+*/
 
     // Initialize the snake
     for (var j = 0; j < 5; j++) {
@@ -107,6 +108,14 @@ var tetris = {
 
       tetris.snake_dirs[j] = 0;
     }
+
+    for (var i = 0; i < 2; i++) {
+      images[i] = document.getElementById(ids[i]);
+      alert(ids[i]);
+      tetris.display_snake[i].setFillPatternImage(images[i]);
+      tetris.display_snake[i].setScale(tetris.block_width / tetris.image_width);
+    }
+    
 
     // tetris.stage.add(tetris.layer_block);
     tetris.stage.add(tetris.layer_snake);
@@ -385,4 +394,4 @@ var tetris = {
 
 };
 
-tetris.init();
+//tetris.init();

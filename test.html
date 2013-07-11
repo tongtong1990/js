@@ -1,17 +1,67 @@
 
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Snake</title>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="page_home" class="page" style="display: none;">
+      <h1>Snake</h1>
+      <div class="touch_controls">
+        <p> </p>
+        <p> </p>
+        <p> </p>
+      </div>
+      <a class="button" href="./#_" id="bt_new_game">New game</a>
+      <div class="about">
+        <h2>About Snake</h2>
+        <p>......</p>
+      </div>
+    </div>
+    <div id="page_game" class="page" style="display: none;">
+      <div id="game_col">
+        <div id="game_zone">
+        </div>
+        <div class="messages_wrapper">
+          <div id="messages"></div>
+        </div>
+      </div>
+      <div id="game_control">
+        <table>
+          <tr><td><a class="button" id="bt_left"><</a></td><td><a class="button" id="bt_right">></a></td></tr>
+        </table>
+      </div>
+    </div>
+  </div> <!-- /#page -->
+  <div id="msg_portrait">
+    Please rotate your device to portrait mode
+  </div>
+
+<script type="IN/Login">
+
+<div id="connectionstest">
+  <div id="profiledata"></div>
+  <div id="connectionsdata"></div>
+</div>
+
+</script>
+
 <script type="text/javascript" src="http://platform.linkedin.com/in.js">
   api_key: 2g5r8lbvdmqv
   onLoad: onLinkedInLoad
 
 </script>
 
-
-<p>This example demonstrates how to retrieve a user's connections.  It also uses the LinkedIn auth events (load, login, logout) to control behavior.</p>
-
 <!-- NOTE: be sure to set onLoad: onLinkedInLoad -->
 <script type="text/javascript">
 
-var ids = {};
+var ids = new Array();
 var cnt = 0;
 
 function onLinkedInLoad() {
@@ -20,7 +70,7 @@ function onLinkedInLoad() {
 }
 
 function onLinkedInLogout() {
-  ids = {};
+  ids = new Array();
   cnt = 0;
   setLoginBadge(false);
   setConnections({}, {total:0});
@@ -41,7 +91,9 @@ function onLinkedInLogin() {
     .fields("id", "firstName", "lastName", "pictureUrl", "publicProfileUrl")
     .result(function(result, metadata) {
       setConnections(result.values, metadata);
+      tetris.init();
     });
+
 }
 
 function setLoginBadge(profile){
@@ -50,7 +102,7 @@ function setLoginBadge(profile){
     profHTML = "<p>you need to log in first";
   }else{
     var pictureUrl = profile.pictureUrl || "http://static02.linkedin.com/scds/common/u/img/icon/icon_no_photo_80x80.png";
-    profHTML = "<img align=\"baseline\" src=\"" + pictureUrl + "\"></a>";
+    profHTML = "<img id=\"self\" style=\"display:none\" align=\"baseline\" src=\"" + pictureUrl + "\"></a>";
   }
   document.getElementById("profiledata").innerHTML = profHTML;
 }
@@ -61,7 +113,7 @@ function setConnections(connections) {
     
     /* picture url not always there, must be defensive */
     if (connections[id].hasOwnProperty('pictureUrl')) {
-      connHTML = connHTML + "<img id=\"" + connections[id].id +"\" style=\"visibility:hidden\" align=\"baseline\" src=\"" + connections[id].pictureUrl + "\"></a>";
+      connHTML = connHTML + "<img id=\"" + connections[id].id +"\" style=\"display:none\" align=\"baseline\" src=\"" + connections[id].pictureUrl + "\"></a>";
       ids[cnt] = connections[id].id;
       cnt ++;
     }
@@ -70,11 +122,13 @@ function setConnections(connections) {
   connHTML = connHTML + "</ul>";
   document.getElementById("connectionsdata").innerHTML = connHTML;
 }
+
+function showCanvas(){
+  document.getElementById("page").style.display = 'block';
+}
+
 </script>
-<script type="IN/Login">
-<div id="connectionstest">
-  <p>Current Users Connections:</p>
-  <div id="profiledata"></div>
-  <div id="connectionsdata"></div>
-</div>
-</script>
+ <script type="text/javascript" async="" src="./js/ga.js"></script>
+  <script type="text/javascript" src="./js/kinetic-v4.4.0.min.js"></script>
+  <script type="text/javascript" src="./js/tetris.js"></script>
+</body>
