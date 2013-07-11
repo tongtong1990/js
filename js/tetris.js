@@ -90,22 +90,22 @@ var tetris = {
       };
     };
 
-    tetris.display_snake[tetris.id] = [];
-    tetris.snake_dirs[tetris.id] = [];
+    tetris.display_snake[tetris.self_id] = [];
+    tetris.snake_dirs[tetris.self_id] = [];
     // Initialize the snake
     for (var j = 0; j < tetris.init_len; j++) {
-      tetris.display_snake[tetris.id][j] = new Kinetic.Circle({
+      tetris.display_snake[tetris.self_id][j] = new Kinetic.Circle({
         x: (tetris.init_len - j) * tetris.block_width + tetris.block_width / 2,
         y: tetris.block_width / 2,
         radius: tetris.block_width / (2 * tetris.scale) - 2,
-        stroke: tetris.color_mappings[tetris.id],
+        stroke: tetris.color_mappings[tetris.self_id],
         strokeWidth: 3
       });
-      tetris.layer_snake.add(tetris.display_snake[tetris.id][j]);
+      tetris.layer_snake.add(tetris.display_snake[tetris.self_id][j]);
 
-      tetris.snake_dirs[tetris.id][j] = 0;
+      tetris.snake_dirs[tetris.self_id][j] = 0;
     }
-    tetris.head_dir[tetris.id] = 0;
+    tetris.head_dir[tetris.self_id] = 0;
 
     // Initialize images
     var images = {};
@@ -113,12 +113,12 @@ var tetris = {
     for (var i = 0; i < tetris.init_len; i++) {
       if (i != 0) {
         images[i] = document.getElementById(ids[i]);
-        tetris.display_snake[tetris.id][i].setFillPatternImage(images[i]);
-        tetris.display_snake[tetris.id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
+        tetris.display_snake[tetris.self_id][i].setFillPatternImage(images[i]);
+        tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
-        tetris.display_snake[tetris.id][i].setFill(tetris.color_mappings[tetris.id]);
+        tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
       }
-      tetris.display_snake[tetris.id][i].setScale(tetris.block_width / tetris.image_width);
+      tetris.display_snake[tetris.self_id][i].setScale(tetris.block_width / tetris.image_width);
     }
     
 
@@ -250,18 +250,18 @@ var tetris = {
   edge_safe: function(direction) {
     // going to right
     if(direction == 0)
-      return tetris.display_snake[tetris.id][0].getAbsolutePosition().x + tetris.block_width < tetris.block_width * tetris.cols;
+      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x + tetris.block_width < tetris.block_width * tetris.cols;
     else if (direction == 1)  // going down
-      return tetris.display_snake[tetris.id][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * tetris.rows;
+      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * tetris.rows;
     else if (direction == 2)  // going left
-      return tetris.display_snake[tetris.id][0].getAbsolutePosition().x - tetris.block_width > 0;
+      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x - tetris.block_width > 0;
     else  // going top
-      return tetris.display_snake[tetris.id][0].getAbsolutePosition().y - tetris.block_width > 0;     
+      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y - tetris.block_width > 0;     
  },
 
   update_block: function () {
 
-    if(!tetris.edge_safe(tetris.snake_dirs[tetris.id][0])) {
+    if(!tetris.edge_safe(tetris.snake_dirs[tetris.self_id][0])) {
     //  alert("hit");
     //  tetris.game_over();
       return;
@@ -270,22 +270,22 @@ var tetris = {
     // Update snake position
     for (var i = 1; i >= 0; i--) {
 
-      var curX = tetris.display_snake[tetris.id][i].getAbsolutePosition().x;
-      var curY = tetris.display_snake[tetris.id][i].getAbsolutePosition().y;
+      var curX = tetris.display_snake[tetris.self_id][i].getAbsolutePosition().x;
+      var curY = tetris.display_snake[tetris.self_id][i].getAbsolutePosition().y;
 
-      if (tetris.snake_dirs[tetris.id][i] == 0)
-        tetris.display_snake[tetris.id][i].setX(curX + tetris.block_width);
-      else if (tetris.snake_dirs[tetris.id][i] == 1)
-        tetris.display_snake[tetris.id][i].setY(curY + tetris.block_width);
-      else if (tetris.snake_dirs[tetris.id][i] == 2)
-        tetris.display_snake[tetris.id][i].setX(curX - tetris.block_width);
-      else if (tetris.snake_dirs[tetris.id][i] == 3)
-        tetris.display_snake[tetris.id][i].setY(curY - tetris.block_width);
+      if (tetris.snake_dirs[tetris.self_id][i] == 0)
+        tetris.display_snake[tetris.self_id][i].setX(curX + tetris.block_width);
+      else if (tetris.snake_dirs[tetris.self_id][i] == 1)
+        tetris.display_snake[tetris.self_id][i].setY(curY + tetris.block_width);
+      else if (tetris.snake_dirs[tetris.self_id][i] == 2)
+        tetris.display_snake[tetris.self_id][i].setX(curX - tetris.block_width);
+      else if (tetris.snake_dirs[tetris.self_id][i] == 3)
+        tetris.display_snake[tetris.self_id][i].setY(curY - tetris.block_width);
 
       if (i == 0)
-        tetris.snake_dirs[tetris.id][i] = tetris.head_dir[tetris.id];
+        tetris.snake_dirs[tetris.self_id][i] = tetris.head_dir[tetris.self_id];
       else
-        tetris.snake_dirs[tetris.id][i] = tetris.snake_dirs[tetris.id][i - 1];
+        tetris.snake_dirs[tetris.self_id][i] = tetris.snake_dirs[tetris.self_id][i - 1];
     }
 
     tetris.show_block();
@@ -293,7 +293,7 @@ var tetris = {
 
   show_block: function () {
     for (var i = 0; i < 2; i++) {
-      tetris.display_snake[tetris.id][i].show();
+      tetris.display_snake[tetris.self_id][i].show();
     }
     tetris.layer_snake.draw();
   },
@@ -306,18 +306,18 @@ var tetris = {
   },
 
   move_left: function () {
-    if (tetris.head_dir[tetris.id] == 0)
-      tetris.head_dir[tetris.id] = 3;
+    if (tetris.head_dir[tetris.self_id] == 0)
+      tetris.head_dir[tetris.self_id] = 3;
     else
-      tetris.head_dir[tetris.id]--;
+      tetris.head_dir[tetris.self_id]--;
   },
 
   move_right: function () {
 
-    if (tetris.head_dir[tetris.id] == 3)
-      tetris.head_dir[tetris.id] = 0;
+    if (tetris.head_dir[tetris.self_id] == 3)
+      tetris.head_dir[tetris.self_id] = 0;
     else
-      tetris.head_dir[tetris.id]++;
+      tetris.head_dir[tetris.self_id]++;
   },
 
   watch_keys: function () {
@@ -356,8 +356,8 @@ var tetris = {
         if (new_pos_x - tetris.last_pos_x <= -tetris.block_width) {
           // finger going left
 
-          if (tetris.head_dir[tetris.id] != 0)
-            tetris.head_dir[tetris.id] = 2;
+          if (tetris.head_dir[tetris.self_id] != 0)
+            tetris.head_dir[tetris.self_id] = 2;
 
           tetris.update_block();
 
@@ -365,16 +365,16 @@ var tetris = {
         if (new_pos_x - tetris.last_pos_x >= tetris.block_width) {
           // finger going right
 
-          if (tetris.head_dir[tetris.id] != 2)
-            tetris.head_dir[tetris.id] = 0;
+          if (tetris.head_dir[tetris.self_id] != 2)
+            tetris.head_dir[tetris.self_id] = 0;
 
           tetris.update_block();
         };
         if (new_pos_y - tetris.last_pos_y >= tetris.block_width) {
           // finger going down
 
-          if (tetris.head_dir[tetris.id] != 3)
-            tetris.head_dir[tetris.id] = 1;
+          if (tetris.head_dir[tetris.self_id] != 3)
+            tetris.head_dir[tetris.self_id] = 1;
 
           tetris.update_block();
         };
@@ -382,8 +382,8 @@ var tetris = {
           // finger going up
 
 
-          if (tetris.head_dir[tetris.id] != 1)
-            tetris.head_dir[tetris.id] = 3;
+          if (tetris.head_dir[tetris.self_id] != 1)
+            tetris.head_dir[tetris.self_id] = 3;
 
           tetris.update_block();
         };
