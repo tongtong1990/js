@@ -10,13 +10,6 @@
   <div id="page">
     <div id="page_home" class="page" style="display: none;">
       <h1>Snake</h1>
-      <div class="controls">
-        <div>Keyboard controls :</div>
-        <input type="radio" name="switch_mode" id="bt_type_a" class="on">
-        <label for="bt_type_a" class="on">Up = rotate</label>
-        <input type="radio" name="switch_mode" id="bt_type_b" class="">
-        <label for="bt_type_b" class="">Up = drop</label>
-      </div>
       <div class="touch_controls">
         <p> </p>
         <p> </p>
@@ -38,17 +31,9 @@
         <div id="overlay" style="display: block;">
         </div>
       </div>
-      <div id="infos">
-        <div id="next_zone" style="width: 134.4px; height: 134.4px;">
-        </div>
-        <a class="button" href="./#_" id="bt_pause">Pause</a>
-        <div class="best_wrapper">
-          Best: <span id="best_zone"></span>
-        </div>
-        <div id="score_zone"></div>
-        <div class="lines_wrapper">
-          Lines: <span id="lines_zone"></span>
-        </div>
+      <div id="game_control">
+        <a class="button" id="bt_left" style="float: left;"><</a>
+        <a class="button" id="bt_right" style="float: right;">></a>
       </div>
     </div>
   </div> <!-- /#page -->
