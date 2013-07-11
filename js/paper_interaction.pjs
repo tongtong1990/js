@@ -1,0 +1,83 @@
+
+var count = 7;
+var dirs = new Array();
+
+var path = new Path.Rectangle({
+    width: 10,
+    height: 10,
+    fillColor: 'red'
+});
+
+var symbol = new Symbol(path);
+
+for (var i = 0; i < count; i++) {
+	var center = new Point(100 - i * 12, 10);
+	var placedSymbol = symbol.place(center);
+	dirs[i] = 0;
+}
+
+var time = 0;
+function onFrame(event) {
+	time++;
+	if (time % 30 == 0) {
+		for (var i = count - 1; i >= 0; i--) {
+			var item = project.activeLayer.children[i];
+			if (dirs[i] == 0) {
+				item.position.x += 12;
+			} else if (dirs[i] == 1) {
+				item.position.y += 12;
+			} else if (dirs[i] == 2) {
+				item.position.x -= 12;
+			} else {
+				item.position.y -= 12;
+			}
+			if (i > 0)
+				dirs[i] = dirs[i - 1];
+		}
+	}
+}
+
+var left = new PointText({
+	point: new Point(10, 300),
+	justification: 'center',
+	fontSize: 30,
+	fillColor: 'blue',
+	content: '<'
+});
+
+left.onMouseDown = function(event) {
+	if (dirs[0] == 0)
+		dirs[0] = 3;
+	else
+		dirs[0]--;
+}
+
+function turnLeft() {
+	if (dirs[0] == 0)
+		dirs[0] = 3;
+	else
+		dirs[0]--;
+}
+
+var right = new PointText({
+	point: new Point(50, 300),
+	justification: 'center',
+	fontSize: 30,
+	fillColor: 'blue',
+	content: '>'
+});
+
+right.onMouseDown = function(event) {
+	if (dirs[0] == 3)
+		dirs[0] = 0;
+	else
+		dirs[0]++;
+}
+
+function turnRight() {
+	if (dirs[0] == 3)
+		dirs[0] = 0;
+	else
+		dirs[0]++;
+}
+
