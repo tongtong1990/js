@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css">
+		<script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+		<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+	</head>
+	<body>
+		<script>
+			var socket = io.connect('http://localhost:9999');
+			var self_id = null, left_id = null, right_id = null;
+			$(function(){
+				$(document).on('swiperight', function(e){
+					socket.emit('conn_left',{me:self_id});
+					socket.on('conn_left_confirm', function(data){
+						self_id = data.self_id;
+						right_id = data.right_id;
+						alert('Left screen confirm');
+					});
+				});
+				$(document).on('swipeleft', function(e){
+					socket.emit('conn_right',{me:self_id});
+					socket.on('conn_right_confirm',function(data){
+						self_id = data.self_id;
+						left_id = data.left_id;
+						alert('Right screen confirm');
+					});
+				})
+			});
+		</script>
+	</body>
+</html>
