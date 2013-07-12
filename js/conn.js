@@ -1,4 +1,4 @@
-var socket = io.connect('http://172.19.201.135:9202');
+var socket = io.connect('http://localhost:9202');
 function go_to_right_screen(tself_id, tright_id, snake_id, head_coord){
 	socket.emit('break_wall_from_left',{self_id:tself_id, target_id:tright_id, snake_id:snake_id, head_location:head_coord});
 }
