@@ -277,10 +277,19 @@ var tetris = {
  },
 
   update_block: function () {
-
-    if(!tetris.edge_safe(tetris.snake_dirs[tetris.self_id][0])) {
+      var direction = tetris.snake_dirs[tetris.self_id][0]);
+    if(!tetris.edge_safe(direction) {
     //  alert("hit");
     //  tetris.game_over();
+      // start to break into the right device
+      if ( tetris.right_id != undefined && direction == 0) {
+
+
+      }
+      else if ( tetris.left_id != undefined && direction == 2) {
+
+      }
+
       return;
     }
 
