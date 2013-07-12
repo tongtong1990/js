@@ -167,13 +167,11 @@ var tetris = {
     tetris.display_snake[snakeid] = [];
     tetris.snake_dirs[snakeid] = [];
     tetris.snake_imgs[snakeid] = [];
+    tetris.alive_snakes.push(snakeid);
   },
 
 
   new_snake: function(snake) {
-
-    tetris.alive_snakes.push(snake.snakeid);
-
     tetris.isLeaving[snake.snakeid] = false;
     tetris.start_index[snake.snakeid] = 0;
     if(snake.direction == 0){
