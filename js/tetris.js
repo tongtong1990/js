@@ -8,6 +8,7 @@ var tetris = {
   game_col: null,
   game_zone: null,
   messages: null,
+  overlay: null,
   bt_left: null,
   bt_right: null,
 
@@ -62,6 +63,7 @@ var tetris = {
     tetris.page_game = document.getElementById('page_game');
     tetris.game_col = document.getElementById('game_col');
     tetris.game_zone = document.getElementById('game_zone');
+    tetris.overlay = document.getElementById('overlay');
 
     document.getElementById('bt_left').addEventListener('click', function() {
       tetris.move_left();
@@ -164,6 +166,7 @@ var tetris = {
     tetris.page_oauth.style.display = 'none';
     tetris.page_home.style.display = 'block';
     tetris.page_game.style.display = 'none';
+    tetris.overlay.style.display = 'none';
     tetris.state = 'home';
   },
 
@@ -171,20 +174,13 @@ var tetris = {
     tetris.page_oauth.style.display = 'none';
     tetris.page_home.style.display = 'none';
     tetris.page_game.style.display = 'block';
+    tetris.overlay.style.display = 'none';
     tetris.state = 'game';
     tetris.init_game();
   },
 
   init_game: function () {
     tetris.state = 'game';
-    tetris.level = 0;
-    tetris.speed = tetris.init_speed;
-    tetris.lines = 0;
-    tetris.score = 0;
-    tetris.count_single = 0;
-    tetris.count_double = 0;
-    tetris.count_triple = 0;
-    tetris.count_tetris = 0;
     tetris.clear_board();
 
     setTimeout(function () {
@@ -206,18 +202,7 @@ var tetris = {
   },
 
   clear_board: function () {
-    for (var i = 0; i < tetris.rows; i++) {
-      tetris.board[i] = [];
-      for (var j = 0; j < tetris.cols; j++) {
-        tetris.board[i][j] = {
-          stone: false,
-          block: false,
-          shadow: false,
-          updated: true,
-          color: null
-        };
-      };
-    };
+    
   },
 
   pause_game: function () {
@@ -248,6 +233,7 @@ var tetris = {
   },
 
   game_over: function () {
+    alert('game over');
     tetris.state = 'game_over';
 
     var html = '<h2>Game Over</h2>';
@@ -257,6 +243,7 @@ var tetris = {
     tetris.overlay.style.display = 'block';
 
     document.getElementById('bt_play_again').addEventListener('click', function() {
+      tetris.overlay.style.display = 'none';
       tetris.init_game();
     });
     document.getElementById('bt_main_menu').addEventListener('click', function() {
@@ -289,8 +276,6 @@ var tetris = {
       else if ( tetris.left_id != undefined && direction == 2) {
 
       }
-
-      return;
     }
 
     // Update snake position
