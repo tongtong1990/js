@@ -219,8 +219,8 @@ var tetris = {
           if (index_cnt == target_index) {
             // Generate target here
             var target = new Kinetic.Circle({
-              x: i * tetris.block_width + tetris.block_width / 2,
-              y: j * tetris.block_width + tetris.block_width / 2,
+              x: j * tetris.block_width + tetris.block_width / 2,
+              y: i * tetris.block_width + tetris.block_width / 2,
               radius: tetris.block_width / (2 * tetris.scale) - 2,
               fillPatternImage: image,
               stroke: tetris.color_mappings[tetris.self_id],
