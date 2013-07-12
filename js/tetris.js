@@ -27,7 +27,6 @@ var tetris = {
   snake_dirs: [],
   head_dir: [],
 
-
 //  snake_dirs: [0, 0, 0, 0, 0],
 //  head_dir: 0, // head direction, 0: right, 1: down, 2: left, 3: up.
   image_width: 80, // Image width from LinkedIn
@@ -41,6 +40,9 @@ var tetris = {
   screen_width: 0,
   screen_height: 0,
   init_len: 2,
+  map: [],
+
+
 
   // touch/finger controls
   last_pos_x: 0,
@@ -90,10 +92,12 @@ var tetris = {
     });
 
     // Blocks: background
-    tetris.layer_block = new Kinetic.Layer();
+    // tetris.layer_block = new Kinetic.Layer();
     tetris.layer_snake = new Kinetic.Layer();
+
     for (var i = 0; i < tetris.rows - 1; i++) {
       tetris.display_block[i] = [];
+      tetris.map[i] = [];
       for (var j = 0; j < tetris.cols; j++) {
         // Black square
         tetris.display_block[i][j] = new Kinetic.Rect({
@@ -104,6 +108,8 @@ var tetris = {
           fill: 'black'
         });
         tetris.layer_snake.add(tetris.display_block[i][j]);
+
+        tetris.map[i][j] = 0; // No snake on it.
       };
     };
     
@@ -161,23 +167,23 @@ var tetris = {
         strokeWidth: 3
       });
       tetris.layer_snake.add(tetris.display_snake[tetris.self_id][j]);
-
+      // Direction of this part of the snake
       tetris.snake_dirs[tetris.self_id][j] = 0;
+      // Change map
+      tetris.map[0][tetris.init_len - j] = 1;
     }
     tetris.head_dir[tetris.self_id] = 0;
 
     // Initialize images
-    var images = {};
-
     for (var i = 0; i < tetris.init_len; i++) {
       if (i != 0) {
-        images[i] = document.getElementById(ids[i]);
-        tetris.display_snake[tetris.self_id][i].setFillPatternImage(images[i]);
+        var image = document.getElementById(ids[i]);
+        tetris.display_snake[tetris.self_id][i].setFillPatternImage(image);
         tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
         tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
       }
-      tetris.display_snake[tetris.self_id][i].setScale(tetris.block_width / tetris.image_width);
+      tetris.display_snake[tetris.self_id][i].setScale(tetris.scale);
     }
   },
 
@@ -194,14 +200,54 @@ var tetris = {
     }, 0);
   },
 
-  snake_move: function() {
+
+  generate_target: function () {
+    // Generate a random number
+    var rand = Math.floor(Math.random() * ids.size());
+    // Get image
+    alert(ids.size());
+    var image = document.getElementById(ids[rand]);
+    alert(image);
+
+    // Generate target
+    var snake_len = tetris.display_snake[tetris.self_id].length;
+    var target_index = Math.floor(Math.random() * (tetris.rows - 1) * tetris.cols - snake_len);
+    alert(target_index);
+    var cnt = 0;
+    for (var i = 0; i < tetris.rows - 1; i++) {
+      for (var j = 0; j < tetris.cols; j++) {
+        if (tetris.map[i][j] == 0) {
+          if (cnt == target_index) {
+            // Generate target here
+            var target = new Kinetic.Circle({
+              x: i * tetris.block_width + tetris.block_width / 2,
+              y: j * tetris.block_width + tetris.block_width / 2,
+              radius: tetris.block_width / (2 * tetris.scale) - 2,
+              fillPatternImage: image,
+              stroke: tetris.color_mappings[tetris.self_id],
+              strokeWidth: 3
+            });
+            target.setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
+            target.setScale(tetris.scale);
+            tetris.layer_snake.add(target);
+            return;
+          } else {
+            cnt++;
+          }
+        }
+      }
+    }
+  },
+
+  snake_move: function () {
     tetris.update_block();
-    setTimeout(function() {
+    setTimeout(function () {
+      // tetris.generate_target();
       tetris.snake_move();
     }, 1000);
   },
 
-  test_wallbreak: function() {
+  test_wallbreak: function () {
 
   },
 
@@ -264,7 +310,7 @@ var tetris = {
       return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x - tetris.block_width > 0;
     else  // going top
       return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y - tetris.block_width > 0;     
- },
+  },
 
   update_block: function () {
     var direction = tetris.snake_dirs[tetris.self_id][0];
@@ -282,7 +328,11 @@ var tetris = {
     }
 
     // Update snake position
-    for (var i = 1; i >= 0; i--) {
+    for (var i = tetris.display_snake[tetris.self_id].length - 1; i >= 0; i--) {
+
+      // Update map
+      if (i == tetris.display_snake[tetris.self_id].length - 1) // snake tail
+        tetris.map[Math.floor(tetris.display_snake[tetris.self_id][i].getAbsolutePosition().y / tetris.block_width)][Math.floor(tetris.display_snake[tetris.self_id][i].getAbsolutePosition().x / tetris.block_width)] = 0;
 
       var curX = tetris.display_snake[tetris.self_id][i].getAbsolutePosition().x;
       var curY = tetris.display_snake[tetris.self_id][i].getAbsolutePosition().y;
@@ -300,13 +350,17 @@ var tetris = {
         tetris.snake_dirs[tetris.self_id][i] = tetris.head_dir[tetris.self_id];
       else
         tetris.snake_dirs[tetris.self_id][i] = tetris.snake_dirs[tetris.self_id][i - 1];
+
+      // Update map
+      if (i == 0) // snake head
+        tetris.map[Math.floor(tetris.display_snake[tetris.self_id][i].getAbsolutePosition().y / tetris.block_width)][Math.floor(tetris.display_snake[tetris.self_id][i].getAbsolutePosition().x / tetris.block_width)] = 1;
     }
 
     tetris.show_block();
   },
 
   show_block: function () {
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < tetris.display_snake[tetris.self_id].length; i++) {
       tetris.display_snake[tetris.self_id][i].show();
     }
     tetris.layer_snake.draw();
@@ -324,14 +378,17 @@ var tetris = {
       tetris.head_dir[tetris.self_id] = 3;
     else
       tetris.head_dir[tetris.self_id]--;
+    // Immediate take turns
+    tetris.snake_dirs[tetris.self_id][0] = tetris.head_dir[tetris.self_id];
   },
 
   move_right: function () {
-
     if (tetris.head_dir[tetris.self_id] == 3)
       tetris.head_dir[tetris.self_id] = 0;
     else
       tetris.head_dir[tetris.self_id]++;
+    // Immediate take turns
+    tetris.snake_dirs[tetris.self_id][0] = tetris.head_dir[tetris.self_id];
   },
 
   watch_keys: function () {
