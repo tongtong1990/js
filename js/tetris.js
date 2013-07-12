@@ -21,11 +21,13 @@ var tetris = {
   display_line: [],
   display_block: [],
   target: null,
+  target_id: null,
 //  display_snake: [],
 
   // Modified display_snake and snake_dirs
   display_snake: [],
   snake_dirs: [],
+  snake_imgs: [], // Images of each snake
   head_dir: [],
 
   isLeaving: [],
@@ -161,6 +163,7 @@ var tetris = {
   new_snake: function(snake) {
     tetris.display_snake[snake.snakeid] = [];
     tetris.snake_dirs[snake.snakeid] = [];
+    tetris.snake_imgs[snake.snakeid] = [];
     tetris.isLeaving[snake.snakeid] = false;
     if(snake.direction == 0){
       tetris.display_snake[snake.snakeid][0] = new Kinetic.Circle({
@@ -198,6 +201,7 @@ var tetris = {
   init_snake: function () {
     tetris.display_snake[tetris.self_id] = [];
     tetris.snake_dirs[tetris.self_id] = [];
+    tetris.snake_imgs[tetris.self_id] = [];
     tetris.isLeaving[tetris.self_id] = false;
     tetris.snake_status[tetris.self_id] = 1;
     // Initialize the snake
@@ -222,6 +226,8 @@ var tetris = {
       if (i != 0) {
         var image = document.getElementById(ids[i]);
         tetris.display_snake[tetris.self_id][i].setFillPatternImage(image);
+        // Update snake_imgs
+        tetris.snake_imgs[tetris.self_id][i] = ids[i];
         tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
         tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
@@ -285,6 +291,7 @@ var tetris = {
     // Generate a random number
     var rand = Math.floor(Math.random() * cnt);
     // Get image
+    tetris.target_id = ids[rand];
     var image = document.getElementById(ids[rand]);
 
     // Generate target
@@ -322,23 +329,28 @@ var tetris = {
     return;
   },
 
-  snake_eat: function (tail_x, tail_y, tail_dir) {
+  snake_eat: function (snakeid, tail_x, tail_y, tail_dir) {
     // Get the target
-    var tail_index = tetris.display_snake[tetris.self_id].length;
-    tetris.display_snake[tetris.self_id][tail_index] = tetris.target;
-    tetris.display_snake[tetris.self_id][tail_index].setX(tail_x);
-    tetris.display_snake[tetris.self_id][tail_index].setY(tail_y);
-    tetris.display_snake[tetris.self_id][tail_index].setStroke(tetris.color_mappings[tetris.self_id]);
+    var tail_index = tetris.display_snake[snakeid].length;
+    tetris.display_snake[snakeid][tail_index] = tetris.target;
+    tetris.display_snake[snakeid][tail_index].setX(tail_x);
+    tetris.display_snake[snakeid][tail_index].setY(tail_y);
+    tetris.display_snake[snakeid][tail_index].setStroke(tetris.color_mappings[snakeid]);
 
     // Remove target
     tetris.target = null;
 
-    tetris.layer_snake.add(tetris.display_snake[tetris.self_id][tail_index]);
-    tetris.snake_dirs[tetris.self_id][tail_index] = tail_dir;
+    tetris.layer_snake.add(tetris.display_snake[snakeid][tail_index]);
+    tetris.snake_dirs[snakeid][tail_index] = tail_dir;
     tetris.map[Math.floor(tail_y / tetris.block_width)][Math.floor(tail_x / tetris.block_width)] = 1;
 
+    // Save image id
+    tetris.snake_imgs[snakeid][tail_index] = tetris.target_id;
+    // Broadcast the image id to others
+    eat(snakeid, tetris.target_id);
+
     // Generate another target
-    tetris.generate_target();
+    //tetris.generate_target();
   },
 
   snake_move: function (snakeid) {
@@ -480,7 +492,7 @@ var tetris = {
         // alert(Math.floor(curY / tetris.block_width) + ', ' + Math.floor(curX / tetris.block_width) + ', ' + tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)]);
         if (tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] == -1) {
           // Eat target
-          tetris.snake_eat(tail_x, tail_y, tail_dir);
+          tetris.snake_eat(snakeid, tail_x, tail_y, tail_dir);
         }
         tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 1;
       }

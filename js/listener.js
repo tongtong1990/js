@@ -49,6 +49,8 @@ $(function(){
 		var snake_id = data.snake_id;
 		var pic_id = data.pic_id;
 		//to be added : refresh the status of snake
+		var snake_len = tetris.snake_imgs[snake_id].length;
+		tetris.snake_imgs[snake_id][snake_len] = pic_id;
 	});
 
 	socket.on('new_food_generated',function(data){
