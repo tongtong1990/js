@@ -9,6 +9,15 @@ $(function(){
 	socket.on('new_snake_from_left', function(data){
 		var new_snake_id = data.new_snake_id;
 		var head_location = data.head_location;
+		
+		var snake = {
+			snakeid: new_snake_id,
+			pos: head_location,
+			direction: 0
+		};
+
+		tetris.new_snake(snake);
+
 		//to be added : add a new snake in this screen
 		//to be added : set interval
 
@@ -17,6 +26,15 @@ $(function(){
 	socket.on('new_snake_from_right', function(data){
 		var new_snake_id = data.new_snake_id;
 		var head_location = data.head_location;
+		
+		var snake = {
+			snakeid: new_snake_id,
+			pos: head_location,
+			direction: 2
+		};
+
+		tetris.new_snake(snake);
+
 	})
 
 	socket.on('generate_new_food',function(data){
@@ -48,7 +66,7 @@ $(function(){
 		socket.on('conn_left_confirm', function(data){
 			tetris.self_id = data.self_id;
 			tetris.right_id = data.right_id;
-			alert('Left screen confirm');
+			alert('Left screen confirm, id is ' + data.self_id);
 		});
 	});
 	$(document).on('swipeleft', function(e){
@@ -56,7 +74,7 @@ $(function(){
 		socket.on('conn_right_confirm',function(data){
 			tetris.self_id = data.self_id;
 			tetris.left_id = data.left_id;
-			alert('Right screen confirm');
+			alert('Right screen confirm, id is ' + data.self_id);
 		});
 	})
 });
