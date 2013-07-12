@@ -340,7 +340,8 @@ var tetris = {
     tetris.map[Math.floor(tail_y / tetris.block_width)][Math.floor(tail_x / tetris.block_width)] = 1;
 
     // Generate another target
-    tetris.generate_target();
+    //tetris.generate_target();
+    eat(snakeid, tetris.target_id)
   },
 
   snake_move: function (snakeid) {
