@@ -22,7 +22,7 @@ $(function(){
 
 	socket.on('generate_new_food',function(data){
 		
-		var newFood = generate_target();
+		var newFood = tetris.generate_target();
 		var new_pic_id = newFood.new_pic_id;
 		var pic_src = newFood.new_pic_src;
 		socket.emit('broadcast_food',{pic_id:new_pic_id, pic_src:pic_src});
