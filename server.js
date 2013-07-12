@@ -86,6 +86,6 @@ io.sockets.on('connection', function (socket) {
     delete players[socket.id];
     // delete socket
     delete clients[socket.id];
-    numClients -= 1;
+    
   });
 });
