@@ -341,7 +341,7 @@ var tetris = {
 
     // Generate another target
     //tetris.generate_target();
-    eat(snakeid, tetris.target_id)
+    eat(snakeid, tetris.target_id);
   },
 
   snake_move: function (snakeid) {
