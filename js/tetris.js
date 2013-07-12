@@ -300,7 +300,6 @@ var tetris = {
     // clean display snake
     tetris.display_snake.splice(tetris.display_snake.indexOf(snakeid), 1);
 
-
   },
 
 
@@ -379,7 +378,7 @@ var tetris = {
     tetris.map[Math.floor(tail_y / tetris.block_width)][Math.floor(tail_x / tetris.block_width)] = 1;
 
     // Save image id
-    tetris.snake_imgs[snakeid][tail_index] = tetris.target_id;
+    tetris.snake_imgs[snakeid][tail_index - 1] = tetris.target_id;
     // Broadcast the image id to others
     eat(snakeid, tetris.target_id);
 
@@ -499,6 +498,18 @@ var tetris = {
     var tail_y = tetris.display_snake[snakeid][tail_index].getAbsolutePosition().y;
     var tail_dir = tetris.snake_dirs[snakeid][tail_index];
 
+    var head_in_x = null;
+    var head_in_y = null;
+    var head_in_dir = null;
+    var head_in_img = null;
+    if (tetris.display_snake[snakeid].length <= tetris.snake_imgs[snakeid].length) {
+      alert(snakeid);
+      head_in_x = tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].getAbsolutePosition().x;
+      head_in_y = tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].getAbsolutePosition().y;
+      head_in_dir = tetris.snake_dirs[snakeid][tetris.display_snake[snakeid].length - 1];
+      head_in_img = document.getElementById(tetris.snake_imgs[snakeid][tetris.display_snake[snakeid].length - 1]);
+    }
+
     // Update snake position
     for (var i = tetris.display_snake[snakeid].length - 1; i >= tetris.start_index[snakeid]; i--) {
 
@@ -536,6 +547,22 @@ var tetris = {
         }
         tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 1;
       }
+    }
+
+    if (tetris.display_snake[snakeid].length <= tetris.snake_imgs[snakeid].length) {
+      tetris.display_snake[snakeid][tetris.display_snake[snakeid].length] = new Kinetic.Circle({
+        x: head_in_x,
+        y: head_in_y,
+        radius: tetris.block_width / (2 * tetris.scale) - 2,
+        fillPatternImage: head_in_img,
+        stroke: tetris.color_mappings[snakeid],
+        strokeWidth: 3
+      });
+      tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
+      tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].setScale(tetris.scale);
+      tetris.layer_snake.add(tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1]);
+      tetris.snake_dirs[snakeid][tetris.display_snake[snakeid].length - 1] = head_in_dir;
+      tetris.map[Math.floor(head_in_y / tetris.block_width)][Math.floor(head_in_x / tetris.block_width)] = 1;
     }
 
     tetris.show_block(snakeid);
