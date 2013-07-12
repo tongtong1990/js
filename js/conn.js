@@ -8,3 +8,9 @@ function go_to_left_screen(tself_id, tleft_id, snake_id, head_coord){
 function eat(snake_id, pic_id){
 	socket.emit('eat',{snake_id:snake_id, pic_id:pic_id});
 }
+
+function init_send_new_food( newFood ) {
+	var new_pic_id = newFood.new_pic_id;
+	var pic_src = newFood.new_pic_src;
+	socket.emit('broadcast_food',{pic_id:new_pic_id, pic_src:pic_src});
+}

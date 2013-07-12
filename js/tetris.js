@@ -190,8 +190,9 @@ var tetris = {
   init_game: function () {
     tetris.state = 'game';
     tetris.clear_board();
-
     tetris.init_snake();
+    var newFood = generate_target();
+    init_send_new_food(newFood);
 
     setTimeout(function () {
       // hide the address bar

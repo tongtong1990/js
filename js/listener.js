@@ -6,7 +6,6 @@ $(function(){
 
 	});
 
-
 	socket.on('new_snake_from_left', function(data){
 		var new_snake_id = data.new_snake_id;
 		var head_location = data.head_location;
