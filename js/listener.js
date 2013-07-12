@@ -46,6 +46,8 @@ $(function(){
 	});
 
 	socket.on('snake_eat',function(data){
+
+		alert('snake ' + data.snake_id + ' ' + data.pic_id);
 		var snake_id = data.snake_id;
 		var pic_id = data.pic_id;
 		//to be added : refresh the status of snake
