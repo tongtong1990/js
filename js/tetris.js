@@ -20,7 +20,7 @@ var tetris = {
   block_width_standard: .1,
   display_line: [],
   display_block: [],
-  display_target: [], // One dimension
+  target: null,
 //  display_snake: [],
 
   // Modified display_snake and snake_dirs
@@ -232,8 +232,8 @@ var tetris = {
     tetris.init_snake();
     var newFood = tetris.generate_target();
     //tetris.layer_snake.draw();
-    if( newFood != undefined)
-        init_send_new_food(newFood);
+//    if( newFood != undefined)
+//        init_send_new_food(newFood);
 
     setTimeout(function () {
       // hide the address bar
@@ -257,8 +257,7 @@ var tetris = {
         if (tetris.map[i][j] == 0) {
           if (index_cnt == target_index) {
             // Generate target here
-            var k = i * tetris.cols + j; // index of target in display_target
-            tetris.display_target[k] = new Kinetic.Circle({
+            tetris.target = new Kinetic.Circle({
               x: j * tetris.block_width + tetris.block_width / 2,
               y: i * tetris.block_width + tetris.block_width / 2,
               radius: tetris.block_width / (2 * tetris.scale) - 2,
@@ -266,10 +265,10 @@ var tetris = {
               stroke: 'purple',
               strokeWidth: 3
             });
-            tetris.display_target[k].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
-            tetris.display_target[k].setScale(tetris.scale);
+            tetris.target.setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
+            tetris.target.setScale(tetris.scale);
             // Add target
-            tetris.layer_snake.add(tetris.display_target[k]);
+            tetris.layer_snake.add(tetris.target);
             // Update map
             tetris.map[i][j] = -1;
 
@@ -284,20 +283,16 @@ var tetris = {
     return;
   },
 
-  snake_eat: function (head_x, head_y, tail_x, tail_y, tail_dir) {
-    // Target position
-    var head_row = Math.floor(head_y / tetris.block_width);
-    var head_col = Math.floor(head_x / tetris.block_width);
-
+  snake_eat: function (tail_x, tail_y, tail_dir) {
     // Get the target
     var tail_index = tetris.display_snake[tetris.self_id].length;
-    tetris.display_snake[tetris.self_id][tail_index] = tetris.display_target[head_row * tetris.cols + head_col];
+    tetris.display_snake[tetris.self_id][tail_index] = tetris.target;
     tetris.display_snake[tetris.self_id][tail_index].setX(tail_x);
     tetris.display_snake[tetris.self_id][tail_index].setY(tail_y);
     tetris.display_snake[tetris.self_id][tail_index].setStroke(tetris.color_mappings[tetris.self_id]);
 
     // Remove target
-    tetris.display_target[head_row * tetris.cols + head_col] = null;
+    tetris.target = null;
 
     tetris.layer_snake.add(tetris.display_snake[tetris.self_id][tail_index]);
     tetris.snake_dirs[tetris.self_id][tail_index] = tail_dir;
@@ -320,7 +315,11 @@ var tetris = {
   },
 
   clear_board: function () {
-    
+    if (tetris.target != null) {
+      // Remove target (specifically for game over logic)
+      tetris.target.hide();
+      tetris.target = null;
+    }
   },
 
   pause_game: function () {
@@ -440,7 +439,7 @@ var tetris = {
         // alert(Math.floor(curY / tetris.block_width) + ', ' + Math.floor(curX / tetris.block_width) + ', ' + tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)]);
         if (tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] == -1) {
           // Eat target
-          tetris.snake_eat(curX, curY, tail_x, tail_y, tail_dir);
+          tetris.snake_eat(tail_x, tail_y, tail_dir);
         }
         tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 1;
       }
