@@ -163,6 +163,7 @@ var tetris = {
   new_snake: function(snake) {
     tetris.display_snake[snake.snakeid] = [];
     tetris.snake_dirs[snake.snakeid] = [];
+    tetris.snake_imgs[snake.snakeid] = [];
     tetris.isLeaving[snake.snakeid] = false;
     if(snake.direction == 0){
       tetris.display_snake[snake.snakeid][0] = new Kinetic.Circle({
