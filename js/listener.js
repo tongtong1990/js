@@ -75,6 +75,10 @@ $(function(){
 		}
 	});
 
+	socket.on('dead_snake', function(data){
+		var snakeid = data.dead_id;
+	});
+
 	$(document).on('swiperight', function(e){
 		socket.emit('conn_left',{me:tetris.self_id});
 		socket.on('conn_left_confirm', function(data){

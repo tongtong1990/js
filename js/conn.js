@@ -18,3 +18,7 @@ function init_send_new_food( newFood ) {
 	var pic_src = newFood.new_pic_src;
 	socket.emit('broadcast_food',{pic_id:new_pic_id, pic_src:pic_src});
 }
+
+function send_dead_id( dead_id) {
+	socket.emit('dead_snake', {dead_id: dead_id});
+}
