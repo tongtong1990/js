@@ -68,6 +68,8 @@ $(function(){
 
 	socket.on('clients_update', function(data){
 		var members = data.clients;
+		tetris.alive_snakes = [];
+    	tetris.dead_snakes = [];
 		for (var key in members) {
 			if (tetris.display_snake[members[key]] == undefined) {
 				tetris.pinch_snake(members[key]);
@@ -77,6 +79,9 @@ $(function(){
 
 	socket.on('dead_snake', function(data){
 		var snakeid = data.dead_id;
+		console.log("got dead id: " + snakeid);
+		tetris.update_snake_status(parseInt(snakeid));
+
 	});
 
 	$(document).on('swiperight', function(e){

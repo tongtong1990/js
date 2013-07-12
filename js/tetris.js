@@ -36,6 +36,7 @@ var tetris = {
   snake_head: null,
   // alive snake ids
   alive_snakes: [],
+  dead_snakes: [],
 
   image_width: 80, // Image width from LinkedIn
   scale: 0, // Scale for image
@@ -167,7 +168,7 @@ var tetris = {
     tetris.display_snake[snakeid] = [];
     tetris.snake_dirs[snakeid] = [];
     tetris.snake_imgs[snakeid] = [];
-    tetris.alive_snakes.push(snakeid);
+    tetris.alive_snakes.push(parseInt(snakeid));
   },
 
 
@@ -216,7 +217,9 @@ var tetris = {
     tetris.start_index[tetris.self_id] = 0;
     tetris.snake_head = tetris.self_id;
 
-    tetris.alive_snakes.push(tetris.self_id);
+    // single player
+    if(tetris.alive_snakes.length == 0)
+      tetris.alive_snakes.push(tetris.self_id);
     // Initialize the snake
     for (var j = 0; j < tetris.init_len; j++) {
       tetris.display_snake[tetris.self_id][j] = new Kinetic.Circle({
@@ -249,13 +252,30 @@ var tetris = {
     }
   },
 
+  // assuming input id is an integer
+  update_snake_status: function(dead_snake_id) {
+    var index = tetris.alive_snakes.indexOf(dead_snake_id);
+    // dead snake is not removed
+    if(index >= 0) {
+      // remove from alive_snakes
+      tetris.alive_snakes.splice(index, 1);
+      // add to dead_snakes
+      tetris.dead_snakes.push(dead_snake_id);
+      console.log(dead_snake_id + " is dead");
+    }
+
+    if(tetris.alive_snakes.length == 0) {
+      tetris.game_over(dead_snake_id == tetris.self_id);
+    }
+  },
+
   kill_snake: function(snakeid) {
     // update snake status
     
     var i, j, element_id, element, index;
+    alert(tetris.self_id + " killing " + snakeid);
     send_dead_id(snakeid);
-    index = tetris.alive_snakes.indexOf(snakeid);
-    tetris.alive_snakes.splice(index, 1);
+    tetris.update_snake_status(snakeid);
 
     // clean map for snake id
     for (i = 0; i < tetris.rows - 1; i++) {
@@ -413,10 +433,14 @@ var tetris = {
     tetris.overlay.style.display = 'none';
   },
 
-  game_over: function () {
+  game_over: function (win) {
     tetris.state = 'game_over';
 
     var html = '<h2>Game Over</h2>';
+    if(win)
+      html += '<h3>Win</h3>';
+    else
+      html += '<h3>Lose</h3>';
     html += '<a class="button" id="bt_play_again">Play again</a>';
     html += '<a class="button" id="bt_main_menu">Main menu</a>';
     tetris.overlay.innerHTML = html;
@@ -443,6 +467,7 @@ var tetris = {
       return tetris.display_snake[snakeid][0].getAbsolutePosition().y - tetris.block_width > 0;     
   },
 
+
   update_block: function (snakeid) {
     var direction = tetris.snake_dirs[snakeid][0];
     var i;
@@ -465,11 +490,6 @@ var tetris = {
       // this snake is dead
       else {
         tetris.kill_snake(snakeid);
-        // check game status
-        if(tetris.alive_snakes.length == 0) {
-          tetris.game_over();
-        }
-        alert("player" + snakeid + " is dead");
       }
     }
 

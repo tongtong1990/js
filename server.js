@@ -112,6 +112,11 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('snake_eat', {snake_id: data.snake_id, pic_id: data.pic_id});
   });
 
+  socket.on('send_dead_id', function (data) {
+    console.log('sending ' + data.dead_id);
+    socket.broadcast.emit('dead_snake', {dead_id: data.dead_id});  
+  });
+
   socket.on('control_signal',function(data){
     var snake_id = data.snake_id;
     var target_id = data.target_id;

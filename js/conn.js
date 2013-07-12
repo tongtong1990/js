@@ -20,5 +20,5 @@ function init_send_new_food( newFood ) {
 }
 
 function send_dead_id( dead_id) {
-	socket.emit('dead_snake', {dead_id: dead_id});
+	socket.emit('send_dead_id', {dead_id: dead_id});
 }
