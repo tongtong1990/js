@@ -421,11 +421,17 @@ var tetris = {
     var direction = tetris.snake_dirs[snakeid][0];
     if(!tetris.edge_safe(direction)) {
       if ( tetris.right_id != undefined && direction == 0) {
+        if(tetris.isLeaving[snakeid] == false){
+            tetris.isLeaving[snakeid] = true;
             go_to_right_screen(snakeid, tetris.right_id, snakeid, tetris.display_snake[snakeid][0].getAbsolutePosition().y);
+          }
       }
       // start to break into the left device
       else if ( tetris.left_id != undefined && direction == 2) {
+          if(tetris.isLeaving[snakeid] == false){
+            tetris.isLeaving[snakeid] = true;
             go_to_left_screen(snakeid, tetris.left_id, snakeid, tetris.display_snake[snakeid][0].getAbsolutePosition().y);
+          }
       }
       // this snake is dead
       else {
