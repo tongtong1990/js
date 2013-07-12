@@ -191,9 +191,12 @@ var tetris = {
   init_game: function () {
     tetris.state = 'game';
     tetris.clear_board();
-
     tetris.init_snake();
-    tetris.generate_target();
+    var newFood = tetris.generate_target();
+    alert(newFood);
+    //tetris.layer_snake.draw();
+    if( newFood != undefined)
+        init_send_new_food(newFood);
 
     setTimeout(function () {
       // hide the address bar
@@ -232,13 +235,16 @@ var tetris = {
             tetris.layer_snake.add(tetris.display_target[k]);
             // Update map
             tetris.map[i][j] = -1;
-            return;
+
+            newFood = {new_pic_id: ids[rand], new_pic_src: image.src};
+            return newFood;
           } else {
             index_cnt++;
           }
         }
       }
     }
+    return;
   },
 
   snake_eat: function (head_x, head_y, tail_x, tail_y, tail_dir) {

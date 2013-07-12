@@ -6,7 +6,6 @@ $(function(){
 
 	});
 
-
 	socket.on('new_snake_from_left', function(data){
 		var new_snake_id = data.new_snake_id;
 		var head_location = data.head_location;
@@ -21,10 +20,10 @@ $(function(){
 	})
 
 	socket.on('generate_new_food',function(data){
-		//to be added : choose a position to generate food
-		var new_pic_id = Math.floor(Math.random()*cnt);
-		var pic_obj = document.getElementById(new_pic_id);
-		var pic_src = pic_obj.src;
+		
+		var newFood = tetris.generate_target();
+		var new_pic_id = newFood.new_pic_id;
+		var pic_src = newFood.new_pic_src;
 		socket.emit('broadcast_food',{pic_id:new_pic_id, pic_src:pic_src});
 	});
 
@@ -41,7 +40,7 @@ $(function(){
 		var new_html_code = "<img id=\"" + pic_id +"\" style=\"display:none\" align=\"baseline\" src=\"" + pic_src + "\"></a>";
 		ids[cnt] = pic_id;
 		cnt ++;
-		document.getElementById("connectionsdata").innerHTML += new_html_code;
+		document.getElementById("connectionsdata").getElementByTag('ul').innerHTML += new_html_code;
 	});
 
 	$(document).on('swiperight', function(e){
