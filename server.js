@@ -1,4 +1,4 @@
-var io = require('socket.io').listen(9202);
+var io = require('socket.io').listen(9200);
 var clients = {}; // sockedid => socket
 var users = {}; // user id => socketid
 var players = {} // socketid => user id
