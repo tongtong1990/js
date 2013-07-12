@@ -1,6 +1,6 @@
 $(function(){
 	socket.on('header_change',function(data){
-	var changed_snake_id = data.head_device;
+		var changed_snake_id = data.head_device;
 
 	//to be added : change the header
 
