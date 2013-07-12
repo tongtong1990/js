@@ -135,8 +135,9 @@ io.sockets.on('connection', function (socket) {
     delete players[socket.id];
     // delete socket
     delete clients[socket.id];
+  });
 
-
-    
+  socket.on('dead_snake', function(data){
+    socket.broadcast.emit('dead_snake', data.dead_id);
   });
 });

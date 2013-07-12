@@ -253,6 +253,7 @@ var tetris = {
     // update snake status
     
     var i, j, element_id, element, index;
+    send_dead_id(snakeid);
     index = tetris.alive_snakes.indexOf(snakeid);
     tetris.alive_snakes.splice(index, 1);
 
