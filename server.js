@@ -65,7 +65,8 @@ io.sockets.on('connection', function (socket) {
 
 
   socket.on('generate_new_food', function (data){
-    var targetId = Math.floor(Math.random() * numClients);
+    var targetId = Math.floor(Math.random() * numClients) + 1; // we start from 1
+    console.log('Let ', targetId, ' generates new food');
     clients[users[targetId]].emit('generate_new_food');
   });
 
