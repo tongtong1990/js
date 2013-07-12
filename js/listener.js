@@ -52,6 +52,7 @@ $(function(){
 		var pic_id = data.pic_id;
 		//to be added : refresh the status of snake
 		var snake_len = tetris.snake_imgs[snake_id].length;
+		alert('snake_len ' + snake_len);
 		tetris.snake_imgs[snake_id][snake_len] = pic_id;
 	});
 
@@ -63,6 +64,11 @@ $(function(){
 		ids[cnt] = pic_id;
 		cnt ++;
 		document.getElementById("connectionsdata").getElementByTag('ul').innerHTML += new_html_code;
+	});
+
+	socket.on('clients_update', function(data){
+		var members = data.clients;
+		alert('There is new memeber ', members);
 	});
 
 	$(document).on('swiperight', function(e){
@@ -80,5 +86,5 @@ $(function(){
 			tetris.left_id = data.left_id;
 			alert('Right screen confirm, id is ' + data.self_id);
 		});
-	})
+	});
 });
