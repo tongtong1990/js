@@ -32,8 +32,8 @@ var tetris = {
 
   isLeaving: [],
   timeout_func: [],
-  // Snake status 0: dead, 1: alive
-  snake_status: [],
+  // alive snake ids
+  alive_snakes: [],
 
   image_width: 80, // Image width from LinkedIn
   scale: 0, // Scale for image
@@ -203,7 +203,7 @@ var tetris = {
     tetris.snake_dirs[tetris.self_id] = [];
     tetris.snake_imgs[tetris.self_id] = [];
     tetris.isLeaving[tetris.self_id] = false;
-    tetris.snake_status[tetris.self_id] = 1;
+    tetris.alive_snakes.push(tetris.self_id);
     // Initialize the snake
     for (var j = 0; j < tetris.init_len; j++) {
       tetris.display_snake[tetris.self_id][j] = new Kinetic.Circle({
@@ -238,8 +238,11 @@ var tetris = {
 
   kill_snake: function(snakeid) {
     // update snake status
-    tetris.snake_status[snakeid] = 0;
+    
     var i, j, element_id, element, index;
+    index = tetris.alive_snakes.indexOf(snakeid);
+    tetris.alive_snakes.splice(index, 1);
+
     // clean map for snake id
     for (i = 0; i < tetris.rows - 1; i++) {
       for (j = 0; j < tetris.cols; j++) {
@@ -263,10 +266,7 @@ var tetris = {
     // clean display snake
     tetris.display_snake.splice(tetris.display_snake.indexOf(snakeid), 1);
 
-    // check game status
-    if(tetris.display_snake.length == 0) {
-      tetris.game_over();
-    }
+
   },
 
 
@@ -431,6 +431,7 @@ var tetris = {
 
   update_block: function (snakeid) {
     var direction = tetris.snake_dirs[snakeid][0];
+    var i;
     if(!tetris.edge_safe(direction, snakeid)) {
       if ( tetris.right_id != undefined && direction == 0) {
         if(tetris.isLeaving[snakeid] == false){
@@ -448,6 +449,10 @@ var tetris = {
       // this snake is dead
       else {
         tetris.kill_snake(snakeid);
+        // check game status
+        if(tetris.alive_snakes.length == 0) {
+          tetris.game_over();
+        }
         alert("player" + snakeid + " is dead");
 
       }
