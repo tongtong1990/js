@@ -43,13 +43,26 @@ io.sockets.on('connection', function (socket) {
       }
   });
 
-  socket.on('break_wall', function (data){
+  socket.on('break_wall_from_left', function (data){
     var self_id = data.self_id;
     var target_id = data.target_id;
     var snake_id = data.snake_id;
-    clients[users[target_id]].emit('new_snake', {new_snake_id: snake_id});
+    var head_location = data.head_location;
+
+    clients[users[target_id]].emit('new_snake_from_left', {new_snake_id: snake_id, head_location: head_location});
     clients[users[snake_id]].emit('header_change', {head_device: target_id});
   });
+
+  socket.on('break_wall_from_right', function (data){
+    var self_id = data.self_id;
+    var target_id = data.target_id;
+    var snake_id = data.snake_id;
+    var head_location = data.head_location;
+
+    clients[users[target_id]].emit('new_snake_from_right', {new_snake_id: snake_id, head_location: head_location});
+    clients[users[snake_id]].emit('header_change', {head_device: target_id});
+  });
+
 
   socket.on('generate_new_food', function (data){
     var targetId = Math.floor(Math.random() * numClients);
