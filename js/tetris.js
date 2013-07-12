@@ -106,37 +106,6 @@ var tetris = {
         tetris.layer_snake.add(tetris.display_block[i][j]);
       };
     };
-
-    tetris.display_snake[tetris.self_id] = [];
-    tetris.snake_dirs[tetris.self_id] = [];
-    // Initialize the snake
-    for (var j = 0; j < tetris.init_len; j++) {
-      tetris.display_snake[tetris.self_id][j] = new Kinetic.Circle({
-        x: (tetris.init_len - j) * tetris.block_width + tetris.block_width / 2,
-        y: tetris.block_width / 2,
-        radius: tetris.block_width / (2 * tetris.scale) - 2,
-        stroke: tetris.color_mappings[tetris.self_id],
-        strokeWidth: 3
-      });
-      tetris.layer_snake.add(tetris.display_snake[tetris.self_id][j]);
-
-      tetris.snake_dirs[tetris.self_id][j] = 0;
-    }
-    tetris.head_dir[tetris.self_id] = 0;
-
-    // Initialize images
-    var images = {};
-
-    for (var i = 0; i < tetris.init_len; i++) {
-      if (i != 0) {
-        images[i] = document.getElementById(ids[i]);
-        tetris.display_snake[tetris.self_id][i].setFillPatternImage(images[i]);
-        tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
-      } else {
-        tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
-      }
-      tetris.display_snake[tetris.self_id][i].setScale(tetris.block_width / tetris.image_width);
-    }
     
 
     // tetris.stage.add(tetris.layer_block);
@@ -179,9 +148,44 @@ var tetris = {
     tetris.init_game();
   },
 
+  init_snake: function () {
+    tetris.display_snake[tetris.self_id] = [];
+    tetris.snake_dirs[tetris.self_id] = [];
+    // Initialize the snake
+    for (var j = 0; j < tetris.init_len; j++) {
+      tetris.display_snake[tetris.self_id][j] = new Kinetic.Circle({
+        x: (tetris.init_len - j) * tetris.block_width + tetris.block_width / 2,
+        y: tetris.block_width / 2,
+        radius: tetris.block_width / (2 * tetris.scale) - 2,
+        stroke: tetris.color_mappings[tetris.self_id],
+        strokeWidth: 3
+      });
+      tetris.layer_snake.add(tetris.display_snake[tetris.self_id][j]);
+
+      tetris.snake_dirs[tetris.self_id][j] = 0;
+    }
+    tetris.head_dir[tetris.self_id] = 0;
+
+    // Initialize images
+    var images = {};
+
+    for (var i = 0; i < tetris.init_len; i++) {
+      if (i != 0) {
+        images[i] = document.getElementById(ids[i]);
+        tetris.display_snake[tetris.self_id][i].setFillPatternImage(images[i]);
+        tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
+      } else {
+        tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
+      }
+      tetris.display_snake[tetris.self_id][i].setScale(tetris.block_width / tetris.image_width);
+    }
+  }
+
   init_game: function () {
     tetris.state = 'game';
     tetris.clear_board();
+
+    tetris.init_snake();
 
     setTimeout(function () {
       // hide the address bar
@@ -233,7 +237,6 @@ var tetris = {
   },
 
   game_over: function () {
-    alert('game over');
     tetris.state = 'game_over';
 
     var html = '<h2>Game Over</h2>';
@@ -317,7 +320,6 @@ var tetris = {
   },
 
   move_left: function () {
-    alert('left');
     if (tetris.head_dir[tetris.self_id] == 0)
       tetris.head_dir[tetris.self_id] = 3;
     else
