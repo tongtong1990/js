@@ -36,6 +36,9 @@ $(function(){
 	socket.on('new_food_generated',function(data){
 		var pic_id = data.pic_id;
 		var pic_src = data.pic_src;
+
+		alert('new food generated ' + pic_id + ' | ' + pic_src);
+
 		//add ( download ) the photo from the src. add it to hidden area
 		var new_html_code = "<img id=\"" + pic_id +"\" style=\"display:none\" align=\"baseline\" src=\"" + pic_src + "\"></a>";
 		ids[cnt] = pic_id;

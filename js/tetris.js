@@ -191,8 +191,10 @@ var tetris = {
     tetris.state = 'game';
     tetris.clear_board();
     tetris.init_snake();
-    var newFood = generate_target();
-    init_send_new_food(newFood);
+    var newFood = tetris.generate_target();
+
+    if( newFood != undefined)
+        init_send_new_food(newFood);
 
     setTimeout(function () {
       // hide the address bar
@@ -227,16 +229,16 @@ var tetris = {
             target.setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
             target.setScale(tetris.scale);
             tetris.layer_snake.add(target);
-            return;
+
+            newFood = {new_pic_id: ids[rand], new_pic_src: image.src};
+            return newFood;
           } else {
             index_cnt++;
           }
         }
       }
     }
-
-    newFood = {new_pic_id: ids[rand], new_pic_src: image.src};
-    return newFood;
+    return;
   },
 
   snake_move: function () {
