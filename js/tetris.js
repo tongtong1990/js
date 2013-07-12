@@ -188,7 +188,9 @@ var tetris = {
     tetris.display_snake[snake.snakeid][0].setFill(tetris.color_mappings[snake.snakeid]);
     tetris.display_snake[snake.snakeid][0].setScale(tetris.scale);
 
-    tetris.snake_move(snake.snakeid);
+    setTimeout(function(){
+      tetris.snake_move(snake.snakeid);
+    },1000);
   },
 
   init_snake: function () {
