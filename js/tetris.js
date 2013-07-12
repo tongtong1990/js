@@ -21,6 +21,7 @@ var tetris = {
   display_line: [],
   display_block: [],
   target: null,
+  target_id: 0,
 //  display_snake: [],
 
   // Modified display_snake and snake_dirs
@@ -285,6 +286,7 @@ var tetris = {
     // Generate a random number
     var rand = Math.floor(Math.random() * cnt);
     // Get image
+    tetris.target_id = ids[rand];
     var image = document.getElementById(ids[rand]);
 
     // Generate target
@@ -322,19 +324,19 @@ var tetris = {
     return;
   },
 
-  snake_eat: function (tail_x, tail_y, tail_dir) {
+  snake_eat: function (snakeid, tail_x, tail_y, tail_dir) {
     // Get the target
-    var tail_index = tetris.display_snake[tetris.self_id].length;
-    tetris.display_snake[tetris.self_id][tail_index] = tetris.target;
-    tetris.display_snake[tetris.self_id][tail_index].setX(tail_x);
-    tetris.display_snake[tetris.self_id][tail_index].setY(tail_y);
-    tetris.display_snake[tetris.self_id][tail_index].setStroke(tetris.color_mappings[tetris.self_id]);
+    var tail_index = tetris.display_snake[snakeid].length;
+    tetris.display_snake[snakeid][tail_index] = tetris.target;
+    tetris.display_snake[snakeid][tail_index].setX(tail_x);
+    tetris.display_snake[snakeid][tail_index].setY(tail_y);
+    tetris.display_snake[snakeid][tail_index].setStroke(tetris.color_mappings[snakeid]);
 
     // Remove target
     tetris.target = null;
 
-    tetris.layer_snake.add(tetris.display_snake[tetris.self_id][tail_index]);
-    tetris.snake_dirs[tetris.self_id][tail_index] = tail_dir;
+    tetris.layer_snake.add(tetris.display_snake[snakeid][tail_index]);
+    tetris.snake_dirs[snakeid][tail_index] = tail_dir;
     tetris.map[Math.floor(tail_y / tetris.block_width)][Math.floor(tail_x / tetris.block_width)] = 1;
 
     // Generate another target
@@ -480,7 +482,7 @@ var tetris = {
         // alert(Math.floor(curY / tetris.block_width) + ', ' + Math.floor(curX / tetris.block_width) + ', ' + tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)]);
         if (tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] == -1) {
           // Eat target
-          tetris.snake_eat(tail_x, tail_y, tail_dir);
+          tetris.snake_eat(snakeid, tail_x, tail_y, tail_dir);
         }
         tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 1;
       }
