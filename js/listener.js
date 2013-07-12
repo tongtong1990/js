@@ -43,7 +43,7 @@ $(function(){
 		var new_html_code = "<img id=\"" + pic_id +"\" style=\"display:none\" align=\"baseline\" src=\"" + pic_src + "\"></a>";
 		ids[cnt] = pic_id;
 		cnt ++;
-		document.getElementById("connectionsdata").innerHTML += new_html_code;
+		document.getElementById("connectionsdata").getElementByTag('ul').innerHTML += new_html_code;
 	});
 
 	$(document).on('swiperight', function(e){

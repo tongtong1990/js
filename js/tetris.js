@@ -192,14 +192,14 @@ var tetris = {
     tetris.clear_board();
     tetris.init_snake();
     var newFood = tetris.generate_target();
-    tetris.layer_snake.draw();
+    //tetris.layer_snake.draw();
     if( newFood != undefined)
         init_send_new_food(newFood);
 
     setTimeout(function () {
       // hide the address bar
       window.scrollTo(0, 1);
-      //tetris.snake_move();
+      tetris.snake_move();
     }, 0);
   },
 
