@@ -21,20 +21,21 @@ var tetris = {
   display_line: [],
   display_block: [],
   target: null,
+  target_id: null,
 //  display_snake: [],
 
   // Modified display_snake and snake_dirs
   display_snake: [],
   snake_dirs: [],
+  snake_imgs: [], // Images of each snake
   head_dir: [],
 
   isLeaving: [],
   timeout_func: [],
-  // Snake status 0: dead, 1: alive
-  snake_status: [],
   start_index: [],
-
   snake_head: null,
+  // alive snake ids
+  alive_snakes: [],
 
   image_width: 80, // Image width from LinkedIn
   scale: 0, // Scale for image
@@ -62,7 +63,7 @@ var tetris = {
   self_id: 0,
   left_id: undefined,
   right_id: undefined,
-  color_mappings: { 0: 'white', 1: 'blue', 2: 'red', 3: 'green', 4: 'yellow'},
+  color_mappings: { 0: 'white', 1: 'blue', 2: 'red', 3: 'green', 4: 'yellow', 5: 'gray' },
   self_color: null,
 
   init: function () {
@@ -161,10 +162,15 @@ var tetris = {
     tetris.init_game();
   },
 
+
+  pinch_snake: function(snakeid) {
+    tetris.display_snake[snakeid] = [];
+    tetris.snake_dirs[snakeid] = [];
+    tetris.snake_imgs[snakeid] = [];
+  },
+
+
   new_snake: function(snake) {
-    console.log('new snake comes');
-    tetris.display_snake[snake.snakeid] = [];
-    tetris.snake_dirs[snake.snakeid] = [];
     tetris.isLeaving[snake.snakeid] = false;
     tetris.snake_status[snake.snakeid] = 1;
     tetris.start_index[snake.snakeid] = 0;
@@ -204,10 +210,13 @@ var tetris = {
   init_snake: function () {
     tetris.display_snake[tetris.self_id] = [];
     tetris.snake_dirs[tetris.self_id] = [];
+    tetris.snake_imgs[tetris.self_id] = [];
     tetris.isLeaving[tetris.self_id] = false;
-    tetris.snake_status[tetris.self_id] = 1;
+
     tetris.start_index[tetris.self_id] = 0;
     tetris.snake_head = tetris.self_id;
+
+    tetris.alive_snakes.push(tetris.self_id);
     // Initialize the snake
     for (var j = 0; j < tetris.init_len; j++) {
       tetris.display_snake[tetris.self_id][j] = new Kinetic.Circle({
@@ -230,6 +239,8 @@ var tetris = {
       if (i != 0) {
         var image = document.getElementById(ids[i]);
         tetris.display_snake[tetris.self_id][i].setFillPatternImage(image);
+        // Update snake_imgs
+        tetris.snake_imgs[tetris.self_id][i] = ids[i];
         tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
         tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
@@ -240,8 +251,11 @@ var tetris = {
 
   kill_snake: function(snakeid) {
     // update snake status
-    tetris.snake_status[snakeid] = 0;
+    
     var i, j, element_id, element, index;
+    index = tetris.alive_snakes.indexOf(snakeid);
+    tetris.alive_snakes.splice(index, 1);
+
     // clean map for snake id
     for (i = 0; i < tetris.rows - 1; i++) {
       for (j = 0; j < tetris.cols; j++) {
@@ -265,10 +279,7 @@ var tetris = {
     // clean display snake
     tetris.display_snake.splice(tetris.display_snake.indexOf(snakeid), 1);
 
-    // check game status
-    if(tetris.display_snake.length == 0) {
-      tetris.game_over();
-    }
+
   },
 
 
@@ -293,6 +304,7 @@ var tetris = {
     // Generate a random number
     var rand = Math.floor(Math.random() * cnt);
     // Get image
+    tetris.target_id = ids[rand];
     var image = document.getElementById(ids[rand]);
 
     // Generate target
@@ -330,20 +342,25 @@ var tetris = {
     return;
   },
 
-  snake_eat: function (tail_x, tail_y, tail_dir) {
+  snake_eat: function (snakeid, tail_x, tail_y, tail_dir) {
     // Get the target
-    var tail_index = tetris.display_snake[tetris.self_id].length;
-    tetris.display_snake[tetris.self_id][tail_index] = tetris.target;
-    tetris.display_snake[tetris.self_id][tail_index].setX(tail_x);
-    tetris.display_snake[tetris.self_id][tail_index].setY(tail_y);
-    tetris.display_snake[tetris.self_id][tail_index].setStroke(tetris.color_mappings[tetris.self_id]);
+    var tail_index = tetris.display_snake[snakeid].length;
+    tetris.display_snake[snakeid][tail_index] = tetris.target;
+    tetris.display_snake[snakeid][tail_index].setX(tail_x);
+    tetris.display_snake[snakeid][tail_index].setY(tail_y);
+    tetris.display_snake[snakeid][tail_index].setStroke(tetris.color_mappings[snakeid]);
 
     // Remove target
     tetris.target = null;
 
-    tetris.layer_snake.add(tetris.display_snake[tetris.self_id][tail_index]);
-    tetris.snake_dirs[tetris.self_id][tail_index] = tail_dir;
+    tetris.layer_snake.add(tetris.display_snake[snakeid][tail_index]);
+    tetris.snake_dirs[snakeid][tail_index] = tail_dir;
     tetris.map[Math.floor(tail_y / tetris.block_width)][Math.floor(tail_x / tetris.block_width)] = 1;
+
+    // Save image id
+    tetris.snake_imgs[snakeid][tail_index] = tetris.target_id;
+    // Broadcast the image id to others
+    eat(snakeid, tetris.target_id);
 
     // Generate another target
     tetris.generate_target();
@@ -413,12 +430,12 @@ var tetris = {
     });
   },
 
-  edge_safe: function(direction,snakeid) {
+  edge_safe: function(direction, snakeid) {
     // going to right
     if(direction == 0)
       return tetris.display_snake[snakeid][0].getAbsolutePosition().x + tetris.block_width < tetris.block_width * tetris.cols;
     else if (direction == 1)  // going down
-      return tetris.display_snake[snakeid][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * tetris.rows;
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * (tetris.rows - 1);
     else if (direction == 2)  // going left
       return tetris.display_snake[snakeid][0].getAbsolutePosition().x - tetris.block_width > 0;
     else  // going top
@@ -427,8 +444,8 @@ var tetris = {
 
   update_block: function (snakeid) {
     var direction = tetris.snake_dirs[snakeid][0];
-    if(!tetris.edge_safe(direction,snakeid)) {
-      console.log('go into edge');
+    var i;
+    if(!tetris.edge_safe(direction, snakeid)) {
       if ( tetris.right_id != undefined && direction == 0) {
         if(tetris.isLeaving[snakeid] == false){
             tetris.isLeaving[snakeid] = true;
@@ -447,6 +464,10 @@ var tetris = {
       // this snake is dead
       else {
         tetris.kill_snake(snakeid);
+        // check game status
+        if(tetris.alive_snakes.length == 0) {
+          tetris.game_over();
+        }
         alert("player" + snakeid + " is dead");
       }
     }
@@ -467,14 +488,15 @@ var tetris = {
       var curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
       var curY = tetris.display_snake[snakeid][i].getAbsolutePosition().y;
 
-      if (tetris.snake_dirs[snakeid][i] == 0)
+      if (tetris.snake_dirs[snakeid][i] == 0) {
         tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
-      else if (tetris.snake_dirs[snakeid][i] == 1)
+      } else if (tetris.snake_dirs[snakeid][i] == 1) {
         tetris.display_snake[snakeid][i].setY(curY + tetris.block_width);
-      else if (tetris.snake_dirs[snakeid][i] == 2)
+      } else if (tetris.snake_dirs[snakeid][i] == 2) {
         tetris.display_snake[snakeid][i].setX(curX - tetris.block_width);
-      else if (tetris.snake_dirs[snakeid][i] == 3)
+      } else if (tetris.snake_dirs[snakeid][i] == 3) {
         tetris.display_snake[snakeid][i].setY(curY - tetris.block_width);
+      }
 
       if (i == 0)
         tetris.snake_dirs[snakeid][i] = tetris.head_dir[snakeid];
@@ -489,7 +511,7 @@ var tetris = {
         // alert(Math.floor(curY / tetris.block_width) + ', ' + Math.floor(curX / tetris.block_width) + ', ' + tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)]);
         if (tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] == -1) {
           // Eat target
-          tetris.snake_eat(tail_x, tail_y, tail_dir);
+          tetris.snake_eat(snakeid, tail_x, tail_y, tail_dir);
         }
         tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 1;
       }

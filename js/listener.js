@@ -40,9 +40,14 @@ $(function(){
 	});
 
 	socket.on('snake_eat',function(data){
+
+		// alert('snake ' + data.snake_id + ' ' + data.pic_id);
 		var snake_id = data.snake_id;
 		var pic_id = data.pic_id;
 		//to be added : refresh the status of snake
+		var snake_len = tetris.snake_imgs[snake_id].length;
+		// alert('snake_len ' + snake_len);
+		tetris.snake_imgs[snake_id][snake_len] = pic_id;
 	});
 
 	socket.on('new_food_generated',function(data){
@@ -61,6 +66,15 @@ $(function(){
 		tetris.handle_coming_control_signal(snake_id,coming_control_signal);
 	});
 
+	socket.on('clients_update', function(data){
+		var members = data.clients;
+		for (var key in members) {
+			if (tetris.display_snake[members[key]] == undefined) {
+				tetris.pinch_snake(members[key]);
+			}
+		}
+	});
+
 	$(document).on('swiperight', function(e){
 		socket.emit('conn_left',{me:tetris.self_id});
 		socket.on('conn_left_confirm', function(data){
@@ -76,5 +90,5 @@ $(function(){
 			tetris.left_id = data.left_id;
 			alert('Right screen confirm, id is ' + data.self_id);
 		});
-	})
+	});
 });
