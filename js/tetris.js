@@ -193,7 +193,6 @@ var tetris = {
     tetris.clear_board();
     tetris.init_snake();
     var newFood = tetris.generate_target();
-    alert(newFood);
     //tetris.layer_snake.draw();
     if( newFood != undefined)
         init_send_new_food(newFood);
@@ -275,7 +274,7 @@ var tetris = {
     setTimeout(function () {
       // tetris.generate_target();
       tetris.snake_move();
-    }, 500);
+    }, 800);
   },
 
   test_wallbreak: function () {
