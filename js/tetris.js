@@ -21,12 +21,13 @@ var tetris = {
   display_line: [],
   display_block: [],
   target: null,
-  target_id: 0,
+  target_id: null,
 //  display_snake: [],
 
   // Modified display_snake and snake_dirs
   display_snake: [],
   snake_dirs: [],
+  snake_imgs: [], // Images of each snake
   head_dir: [],
 
   isLeaving: [],
@@ -199,6 +200,7 @@ var tetris = {
   init_snake: function () {
     tetris.display_snake[tetris.self_id] = [];
     tetris.snake_dirs[tetris.self_id] = [];
+    tetris.snake_imgs[tetris.self_id] = [];
     tetris.isLeaving[tetris.self_id] = false;
     tetris.snake_status[tetris.self_id] = 1;
     // Initialize the snake
@@ -223,6 +225,8 @@ var tetris = {
       if (i != 0) {
         var image = document.getElementById(ids[i]);
         tetris.display_snake[tetris.self_id][i].setFillPatternImage(image);
+        // Update snake_imgs
+        tetris.snake_imgs[tetris.self_id][i] = ids[i];
         tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
         tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
@@ -339,9 +343,13 @@ var tetris = {
     tetris.snake_dirs[snakeid][tail_index] = tail_dir;
     tetris.map[Math.floor(tail_y / tetris.block_width)][Math.floor(tail_x / tetris.block_width)] = 1;
 
+    // Save image id
+    tetris.snake_imgs[snakeid][tail_index] = tetris.target_id;
+    // Broadcast the image id to others
+    eat(snakeid, tetris.target_id);
+
     // Generate another target
     //tetris.generate_target();
-    eat(snakeid, tetris.target_id);
   },
 
   snake_move: function (snakeid) {
