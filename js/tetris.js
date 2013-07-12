@@ -171,8 +171,10 @@ var tetris = {
 
 
   new_snake: function(snake) {
+
+    tetris.alive_snakes.push(snake.snakeid);
+
     tetris.isLeaving[snake.snakeid] = false;
-    tetris.snake_status[snake.snakeid] = 1;
     tetris.start_index[snake.snakeid] = 0;
     if(snake.direction == 0){
       tetris.display_snake[snake.snakeid][0] = new Kinetic.Circle({
