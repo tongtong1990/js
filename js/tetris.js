@@ -21,7 +21,7 @@ var tetris = {
   display_line: [],
   display_block: [],
   target: null,
-  target_id: 0,
+  target_id: null,
 //  display_snake: [],
 
   // Modified display_snake and snake_dirs
