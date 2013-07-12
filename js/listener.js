@@ -1,9 +1,7 @@
 $(function(){
 	socket.on('header_change',function(data){
 		var changed_snake_id = data.head_device;
-
-	//to be added : change the header
-
+		tetris.change_head(changed_snake_id);
 	});
 
 	socket.on('new_snake_from_left', function(data){
@@ -17,10 +15,6 @@ $(function(){
 		};
 
 		tetris.new_snake(snake);
-
-		//to be added : add a new snake in this screen
-		//to be added : set interval
-
 	});
 
 	socket.on('new_snake_from_right', function(data){
@@ -59,6 +53,12 @@ $(function(){
 		ids[cnt] = pic_id;
 		cnt ++;
 		document.getElementById("connectionsdata").getElementByTag('ul').innerHTML += new_html_code;
+	});
+
+	socket.on('coming_control_signal',function(data){
+		var snake_id = data.snake_id;
+		var coming_control_signal = data.control_signal;
+		tetris.handle_coming_control_signal(snake_id,coming_control_signal);
 	});
 
 	$(document).on('swiperight', function(e){

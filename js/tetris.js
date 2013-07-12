@@ -32,6 +32,9 @@ var tetris = {
   timeout_func: [],
   // Snake status 0: dead, 1: alive
   snake_status: [],
+  start_index: [],
+
+  snake_head: null,
 
   image_width: 80, // Image width from LinkedIn
   scale: 0, // Scale for image
@@ -159,9 +162,12 @@ var tetris = {
   },
 
   new_snake: function(snake) {
+    console.log('new snake comes');
     tetris.display_snake[snake.snakeid] = [];
     tetris.snake_dirs[snake.snakeid] = [];
     tetris.isLeaving[snake.snakeid] = false;
+    tetris.snake_status[snake.snakeid] = 1;
+    tetris.start_index[snake.snakeid] = 0;
     if(snake.direction == 0){
       tetris.display_snake[snake.snakeid][0] = new Kinetic.Circle({
           x: tetris.block_width / 2,
@@ -200,6 +206,8 @@ var tetris = {
     tetris.snake_dirs[tetris.self_id] = [];
     tetris.isLeaving[tetris.self_id] = false;
     tetris.snake_status[tetris.self_id] = 1;
+    tetris.start_index[tetris.self_id] = 0;
+    tetris.snake_head = tetris.self_id;
     // Initialize the snake
     for (var j = 0; j < tetris.init_len; j++) {
       tetris.display_snake[tetris.self_id][j] = new Kinetic.Circle({
@@ -405,41 +413,42 @@ var tetris = {
     });
   },
 
-  edge_safe: function(direction) {
+  edge_safe: function(direction,snakeid) {
     // going to right
     if(direction == 0)
-      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x + tetris.block_width < tetris.block_width * tetris.cols;
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().x + tetris.block_width < tetris.block_width * tetris.cols;
     else if (direction == 1)  // going down
-      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * tetris.rows;
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * tetris.rows;
     else if (direction == 2)  // going left
-      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x - tetris.block_width > 0;
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().x - tetris.block_width > 0;
     else  // going top
-      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y - tetris.block_width > 0;     
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().y - tetris.block_width > 0;     
   },
 
   update_block: function (snakeid) {
     var direction = tetris.snake_dirs[snakeid][0];
-    if(!tetris.edge_safe(direction)) {
+    if(!tetris.edge_safe(direction,snakeid)) {
+      console.log('go into edge');
       if ( tetris.right_id != undefined && direction == 0) {
         if(tetris.isLeaving[snakeid] == false){
             tetris.isLeaving[snakeid] = true;
+            tetris.start_index[snakeid] = 0;
             go_to_right_screen(snakeid, tetris.right_id, snakeid, tetris.display_snake[snakeid][0].getAbsolutePosition().y);
           }
-      }
+        }
       // start to break into the left device
       else if ( tetris.left_id != undefined && direction == 2) {
           if(tetris.isLeaving[snakeid] == false){
             tetris.isLeaving[snakeid] = true;
+            tetris.start_index[snakeid] = 0;
             go_to_left_screen(snakeid, tetris.left_id, snakeid, tetris.display_snake[snakeid][0].getAbsolutePosition().y);
           }
-      }
+       }
       // this snake is dead
       else {
         tetris.kill_snake(snakeid);
         alert("player" + snakeid + " is dead");
-
       }
-
     }
 
     // Check whether the snake can eat something
@@ -449,7 +458,7 @@ var tetris = {
     var tail_dir = tetris.snake_dirs[snakeid][tail_index];
 
     // Update snake position
-    for (var i = tetris.display_snake[snakeid].length - 1; i >= 0; i--) {
+    for (var i = tetris.display_snake[snakeid].length - 1; i >= tetris.start_index[snakeid]; i--) {
 
       // Update map
       if (i == tetris.display_snake[snakeid].length - 1) // snake tail
@@ -487,13 +496,30 @@ var tetris = {
     }
 
     tetris.show_block(snakeid);
+
+    if(tetris.isLeaving[snakeid] == true){
+      tetris.start_index[snakeid] ++;
+      if(tetris.start_index[snakeid] == tetris.display_snake[snakeid].length){
+        tetris.remove_snake_on_this_screen(snakeid);
+      }
+    }
+
   },
 
   show_block: function (snakeid) {
-    for (var i = 0; i < tetris.display_snake[snakeid].length; i++) {
+    for (var i = tetris.start_index[snakeid]; i < tetris.display_snake[snakeid].length; i++) {
       tetris.display_snake[snakeid][i].show();
     }
     tetris.layer_snake.draw();
+  },
+
+  remove_snake_on_this_screen: function(snakeid) {
+    console.log('remove the time out');
+    clearTimeout(tetris.timeout_func[snakeid]);
+  },
+
+  change_head: function(head_device) {
+    tetris.snake_head = head_device;
   },
 
   message: function (texte) {
@@ -504,21 +530,48 @@ var tetris = {
   },
 
   move_left: function () {
-    if (tetris.head_dir[tetris.self_id] == 0)
-      tetris.head_dir[tetris.self_id] = 3;
-    else
-      tetris.head_dir[tetris.self_id]--;
-    // Immediate take turns
-    tetris.snake_dirs[tetris.self_id][0] = tetris.head_dir[tetris.self_id];
+    if(tetris.snake_head == tetris.self_id){
+      if (tetris.head_dir[tetris.self_id] == 0)
+        tetris.head_dir[tetris.self_id] = 3;
+      else
+        tetris.head_dir[tetris.self_id]--;
+      // Immediate take turns
+      tetris.snake_dirs[tetris.self_id][0] = tetris.head_dir[tetris.self_id];
+    }else{
+      //send the control signal
+      send_control_signal(tetris.self_id,tetris.snake_head, 'move_left');
+    }
   },
 
   move_right: function () {
-    if (tetris.head_dir[tetris.self_id] == 3)
-      tetris.head_dir[tetris.self_id] = 0;
-    else
-      tetris.head_dir[tetris.self_id]++;
-    // Immediate take turns
-    tetris.snake_dirs[tetris.self_id][0] = tetris.head_dir[tetris.self_id];
+    if(tetris.snake_head == tetris.self_id){
+      if (tetris.head_dir[tetris.self_id] == 3)
+        tetris.head_dir[tetris.self_id] = 0;
+      else
+        tetris.head_dir[tetris.self_id]++;
+      // Immediate take turns
+      tetris.snake_dirs[tetris.self_id][0] = tetris.head_dir[tetris.self_id];
+    }else{
+      send_control_signal(tetris.self_id,tetris.snake_head,'move_right');
+    }
+  },
+
+  handle_coming_control_signal: function(snakeid, coming_control_signal) {
+    console.log(snakeid+' '+coming_control_signal);
+    if(coming_control_signal == 'move_left'){
+      console.log('moving left');
+      if(tetris.head_dir[snakeid] == 0)
+        tetris.head_dir[snakeid] = 3;
+      else
+        tetris.head_dir[snakeid] --;
+    }else if(coming_control_signal == 'move_right'){
+      console.log('moving right');
+      if(tetris.head_dir[snakeid] == 3)
+        tetris.head_dir[snakeid] = 0;
+      else
+        tetris.head_dir[snakeid] ++;
+    }
+    tetris.snake_dirs[snakeid][0] = tetris.head_dir[snakeid];
   },
 
   watch_keys: function () {

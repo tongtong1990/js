@@ -78,6 +78,16 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('snake_eat', {snake_id: data.snake_id, pic_id: data.pic_id});
   });
 
+  socket.on('control_signal',function(data){
+    var snake_id = data.snake_id;
+    var target_id = data.target_id;
+    var control_signal = data.control_signal;
+    var target = clients[users[target_id]];
+    if(target != undefined){
+      target.emit('coming_control_signal',{snake_id:snake_id, control_signal:control_signal});
+    }
+  });
+
   socket.on('disconnect', function(){
     console.log('delete ', socket.id);
     // delete users
