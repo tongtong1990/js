@@ -43,6 +43,7 @@ io.sockets.on('connection', function (socket) {
       }
   });
 
+
   socket.on('break_wall_from_left', function (data){
     var self_id = data.self_id;
     var target_id = data.target_id;
