@@ -2,7 +2,7 @@ var io = require('socket.io').listen(9200);
 var clients = {}; // sockedid => socket
 var users = {}; // user id => socketid
 var players = {} // socketid => user id
-var numClients = 0;
+var numClients = 1;
 
 // assume, there is only one pair to pinch together
 var pinch_pair = {};

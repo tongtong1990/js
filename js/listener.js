@@ -21,10 +21,10 @@ $(function(){
 	})
 
 	socket.on('generate_new_food',function(data){
-		//to be added : choose a position to generate food
-		var new_pic_id = Math.floor(Math.random()*cnt);
-		var pic_obj = document.getElementById(new_pic_id);
-		var pic_src = pic_obj.src;
+		
+		var newFood = generate_target();
+		var new_pic_id = newFood.new_pic_id;
+		var pic_src = newFood.new_pic_src;
 		socket.emit('broadcast_food',{pic_id:new_pic_id, pic_src:pic_src});
 	});
 

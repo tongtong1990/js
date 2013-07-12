@@ -233,6 +233,9 @@ var tetris = {
         }
       }
     }
+
+    newFood = {new_pic_id: ids[rand], new_pic_src: image.src};
+    return newFood;
   },
 
   snake_move: function () {
