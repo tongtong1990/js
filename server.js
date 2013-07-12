@@ -1,4 +1,4 @@
-var io = require('socket.io').listen(9200);
+var io = require('socket.io').listen(9202);
 var clients = {}; // sockedid => socket
 var users = {}; // user id => socketid
 var players = {} // socketid => user id
@@ -44,6 +44,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('break_wall_from_left', function (data){
+    
     var self_id = data.self_id;
     var target_id = data.target_id;
     var snake_id = data.snake_id;
@@ -58,7 +59,6 @@ io.sockets.on('connection', function (socket) {
     var target_id = data.target_id;
     var snake_id = data.snake_id;
     var head_location = data.head_location;
-
     clients[users[target_id]].emit('new_snake_from_right', {new_snake_id: snake_id, head_location: head_location});
     clients[users[snake_id]].emit('header_change', {head_device: target_id});
   });
