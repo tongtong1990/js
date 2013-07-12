@@ -179,7 +179,7 @@ var tetris = {
       }
       tetris.display_snake[tetris.self_id][i].setScale(tetris.block_width / tetris.image_width);
     }
-  }
+  },
 
   init_game: function () {
     tetris.state = 'game';
