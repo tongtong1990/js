@@ -112,13 +112,6 @@ h1 {
   animation-iteration-count: infinite;
 }
 
-.touch_controls {
-  display: none;
-}
-.touch_controls p {
-  margin: 10px 0;
-}
-
 .about {
   margin-top: 20px;
   font-size: 16px;

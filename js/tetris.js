@@ -2,6 +2,7 @@ var tetris = {
 
   // html elements
   page: null,
+  page_oauth: null,
   page_home: null,
   page_game: null,
   game_col: null,
@@ -24,6 +25,7 @@ var tetris = {
   display_snake: [],
   snake_dirs: [],
   head_dir: [],
+
 
 //  snake_dirs: [0, 0, 0, 0, 0],
 //  head_dir: 0, // head direction, 0: right, 1: down, 2: left, 3: up.
@@ -55,6 +57,7 @@ var tetris = {
 
   init: function () {
     tetris.page = document.getElementById('page');
+    tetris.page_oauth = document.getElementById('page_oauth');
     tetris.page_home = document.getElementById('page_home');
     tetris.page_game = document.getElementById('page_game');
     tetris.game_col = document.getElementById('game_col');
@@ -62,7 +65,7 @@ var tetris = {
 
     document.getElementById('bt_left').addEventListener('click', function() {
       tetris.move_left();
-    });
+    });  
     document.getElementById('bt_right').addEventListener('click', function() {
       tetris.move_right();
     });
@@ -158,12 +161,14 @@ var tetris = {
   },
 
   show_home: function () {
+    tetris.page_oauth.style.display = 'none';
     tetris.page_home.style.display = 'block';
     tetris.page_game.style.display = 'none';
     tetris.state = 'home';
   },
 
   show_game: function () {
+    tetris.page_oauth.style.display = 'none';
     tetris.page_home.style.display = 'none';
     tetris.page_game.style.display = 'block';
     tetris.state = 'game';
@@ -368,37 +373,23 @@ var tetris = {
         var new_pos_y = e.targetTouches[0].pageY;
         if (new_pos_x - tetris.last_pos_x <= -tetris.block_width) {
           // finger going left
-
           if (tetris.head_dir[tetris.self_id] != 0)
             tetris.head_dir[tetris.self_id] = 2;
-
-          tetris.update_block();
-
         };
         if (new_pos_x - tetris.last_pos_x >= tetris.block_width) {
           // finger going right
-
           if (tetris.head_dir[tetris.self_id] != 2)
             tetris.head_dir[tetris.self_id] = 0;
-
-          tetris.update_block();
         };
         if (new_pos_y - tetris.last_pos_y >= tetris.block_width) {
           // finger going down
-
           if (tetris.head_dir[tetris.self_id] != 3)
             tetris.head_dir[tetris.self_id] = 1;
-
-          tetris.update_block();
         };
         if (new_pos_y - tetris.last_pos_y <= -tetris.block_width) {
           // finger going up
-
-
           if (tetris.head_dir[tetris.self_id] != 1)
             tetris.head_dir[tetris.self_id] = 3;
-
-          tetris.update_block();
         };
 
       };
