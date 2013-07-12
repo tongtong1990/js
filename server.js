@@ -2,7 +2,7 @@ var io = require('socket.io').listen(9202);
 var clients = {}; // sockedid => socket
 var users = {}; // user id => socketid
 var players = {} // socketid => user id
-var numClients = 0;
+var numClients = 1;
 
 // assume, there is only one pair to pinch together
 var pinch_pair = {};
@@ -70,6 +70,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('broadcast_food', function (data){
+    console.log('start to broadcast food ', data.pic_id, ' | ', data.pic_src);
     socket.broadcast.emit('new_food_generated', {pic_id: data.pic_id, pic_src: data.pic_src});
   });
 
