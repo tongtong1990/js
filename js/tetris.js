@@ -160,10 +160,15 @@ var tetris = {
     tetris.init_game();
   },
 
-  new_snake: function(snake) {
+
+  pinch_snake: function(snakeid) {
     tetris.display_snake[snake.snakeid] = [];
     tetris.snake_dirs[snake.snakeid] = [];
     tetris.snake_imgs[snake.snakeid] = [];
+  },
+
+
+  new_snake: function(snake) {
     tetris.isLeaving[snake.snakeid] = false;
     if(snake.direction == 0){
       tetris.display_snake[snake.snakeid][0] = new Kinetic.Circle({
@@ -211,7 +216,11 @@ var tetris = {
         y: tetris.block_width / 2,
         radius: tetris.block_width / (2 * tetris.scale) - 2,
         stroke: tetris.color_mappings[tetris.self_id],
-        strokeWidth: 3
+        strokeWidth: 3,
+        shadowColor: 'white',
+        shadowBlur: 10,
+        shadowOffset: -5,
+        shadowOpacity: 0.5
       });
       tetris.layer_snake.add(tetris.display_snake[tetris.self_id][j]);
       // Direction of this part of the snake
@@ -336,6 +345,9 @@ var tetris = {
     tetris.display_snake[snakeid][tail_index].setX(tail_x);
     tetris.display_snake[snakeid][tail_index].setY(tail_y);
     tetris.display_snake[snakeid][tail_index].setStroke(tetris.color_mappings[snakeid]);
+    tetris.display_snake[snakeid][tail_index].setShadowColor('white');
+    tetris.display_snake[snakeid][tail_index].setShadowBlur(10);
+    tetris.display_snake[snakeid][tail_index].setShadowOpacity(0.5);
 
     // Remove target
     tetris.target = null;
@@ -475,14 +487,19 @@ var tetris = {
       var curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
       var curY = tetris.display_snake[snakeid][i].getAbsolutePosition().y;
 
-      if (tetris.snake_dirs[snakeid][i] == 0)
+      if (tetris.snake_dirs[snakeid][i] == 0) {
         tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
-      else if (tetris.snake_dirs[snakeid][i] == 1)
+        tetris.display_snake[snakeid][i].setShadowOffset(-5);
+      } else if (tetris.snake_dirs[snakeid][i] == 1) {
         tetris.display_snake[snakeid][i].setY(curY + tetris.block_width);
-      else if (tetris.snake_dirs[snakeid][i] == 2)
+        tetris.display_snake[snakeid][i].setShadowOffset(-5);
+      } else if (tetris.snake_dirs[snakeid][i] == 2) {
         tetris.display_snake[snakeid][i].setX(curX - tetris.block_width);
-      else if (tetris.snake_dirs[snakeid][i] == 3)
+        tetris.display_snake[snakeid][i].setShadowOffset(5);
+      } else if (tetris.snake_dirs[snakeid][i] == 3) {
         tetris.display_snake[snakeid][i].setY(curY - tetris.block_width);
+        tetris.display_snake[snakeid][i].setShadowOffset(5);
+      }
 
       if (i == 0)
         tetris.snake_dirs[snakeid][i] = tetris.head_dir[snakeid];
