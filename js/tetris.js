@@ -200,24 +200,20 @@ var tetris = {
     }, 0);
   },
 
-
   generate_target: function () {
     // Generate a random number
-    var rand = Math.floor(Math.random() * ids.size());
+    var rand = Math.floor(Math.random() * cnt);
     // Get image
-    alert(ids.size());
     var image = document.getElementById(ids[rand]);
-    alert(image);
 
     // Generate target
     var snake_len = tetris.display_snake[tetris.self_id].length;
     var target_index = Math.floor(Math.random() * (tetris.rows - 1) * tetris.cols - snake_len);
-    alert(target_index);
-    var cnt = 0;
+    var index_cnt = 0;
     for (var i = 0; i < tetris.rows - 1; i++) {
       for (var j = 0; j < tetris.cols; j++) {
         if (tetris.map[i][j] == 0) {
-          if (cnt == target_index) {
+          if (index_cnt == target_index) {
             // Generate target here
             var target = new Kinetic.Circle({
               x: i * tetris.block_width + tetris.block_width / 2,
@@ -232,7 +228,7 @@ var tetris = {
             tetris.layer_snake.add(target);
             return;
           } else {
-            cnt++;
+            index_cnt++;
           }
         }
       }
