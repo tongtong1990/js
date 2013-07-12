@@ -405,21 +405,21 @@ var tetris = {
     });
   },
 
-  edge_safe: function(direction) {
+  edge_safe: function(direction, snakeid) {
     // going to right
     if(direction == 0)
-      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x + tetris.block_width < tetris.block_width * tetris.cols;
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().x + tetris.block_width < tetris.block_width * tetris.cols;
     else if (direction == 1)  // going down
-      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * tetris.rows;
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * (tetris.rows - 1);
     else if (direction == 2)  // going left
-      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x - tetris.block_width > 0;
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().x - tetris.block_width > 0;
     else  // going top
-      return tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y - tetris.block_width > 0;     
+      return tetris.display_snake[snakeid][0].getAbsolutePosition().y - tetris.block_width > 0;     
   },
 
   update_block: function (snakeid) {
     var direction = tetris.snake_dirs[snakeid][0];
-    if(!tetris.edge_safe(direction)) {
+    if(!tetris.edge_safe(direction, snakeid)) {
       if ( tetris.right_id != undefined && direction == 0) {
         if(tetris.isLeaving[snakeid] == false){
             tetris.isLeaving[snakeid] = true;
