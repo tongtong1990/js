@@ -270,11 +270,11 @@ var tetris = {
     //  tetris.game_over();
       // start to break into the right device
       if ( tetris.right_id != undefined && direction == 0) {
-
-
+            go_to_right_screen(tetris.self_id, tetris.right_id, tetris.self_id, tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y);
       }
+      // start to break into the left device
       else if ( tetris.left_id != undefined && direction == 2) {
-
+            go_to_left_screen(tetris.self_id, tetris.left_id, tetris.self_id, tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x);
       }
     }
 
