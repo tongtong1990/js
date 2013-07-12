@@ -264,8 +264,8 @@ var tetris = {
  },
 
   update_block: function () {
-      var direction = tetris.snake_dirs[tetris.self_id][0]);
-    if(!tetris.edge_safe(direction) {
+    var direction = tetris.snake_dirs[tetris.self_id][0];
+    if(!tetris.edge_safe(direction)) {
     //  alert("hit");
     //  tetris.game_over();
       // start to break into the right device
