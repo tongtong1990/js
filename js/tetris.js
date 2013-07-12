@@ -274,7 +274,7 @@ var tetris = {
       }
       // start to break into the left device
       else if ( tetris.left_id != undefined && direction == 2) {
-            go_to_left_screen(tetris.self_id, tetris.left_id, tetris.self_id, tetris.display_snake[tetris.self_id][0].getAbsolutePosition().x);
+            go_to_left_screen(tetris.self_id, tetris.left_id, tetris.self_id, tetris.display_snake[tetris.self_id][0].getAbsolutePosition().y);
       }
     }
 
