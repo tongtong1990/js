@@ -52,8 +52,7 @@ var tetris = {
   // -1: target, 0: empty
   map: [],
 
-  initial_speed: 500,
-
+  initial_speed: 1000,
   // touch/finger controls
   last_pos_x: 0,
   last_pos_y: 0,
@@ -388,7 +387,7 @@ var tetris = {
     eat(snakeid, tetris.target_id);
 
     var period = 2000;
-    var animCount = 70;
+    var animCount = 50;
     var anim = new Kinetic.Animation(function(frame) {
       var scale = Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
       tetris.display_snake[snakeid][0].setScale(scale);
@@ -538,11 +537,6 @@ var tetris = {
       }
     }
 
-    // Yingchao test purpose
-    // for(i = 1 ; i < tetris.display_snake[snakeid].length; i ++) {
-    //   tetris.display_snake[snakeid][i].rotate(30);
-    // }
-
     // Check whether the snake can eat something
     var tail_index = tetris.display_snake[snakeid].length - 1;
     var tail_x = tetris.display_snake[snakeid][tail_index].getAbsolutePosition().x;
@@ -569,7 +563,6 @@ var tetris = {
       // Update map
       if (i == tetris.display_snake[snakeid].length - 1) // snake tail
         tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 0;
-
 
       if (tetris.snake_dirs[snakeid][i] == 0) {
         tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
@@ -622,9 +615,8 @@ var tetris = {
       tetris.start_index[snakeid] ++;
       if(tetris.start_index[snakeid] == tetris.display_snake[snakeid].length){
         tetris.remove_snake_on_this_screen(snakeid);
+        }
       }
-    }
-
   },
 
   show_block: function (snakeid) {
@@ -764,6 +756,15 @@ var tetris = {
         };
       };
     });
+  },
+
+  findTailIndex: function(snakeid) {
+    var tail_index = tetris.display_snake[snakeid].length - 1;
+    return tail_index;
+  },
+
+  getNewTailPic: function(pic_id) {
+    return document.getElementById(pic_id);
   },
 
   resize: function() {
