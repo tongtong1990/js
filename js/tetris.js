@@ -664,7 +664,7 @@ var tetris = {
             y: coming_y,
             radius: tetris.block_width / (2 * tetris.scale) - 2,
             fillPatternImage: coming_img,
-            stroke: tetris.color_mappings[i % 5],
+            stroke: tetris.color_mappings[i % tetris.color_variations],
             strokeWidth: 3
           });
           tetris.display_snake[i][j + 1].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
