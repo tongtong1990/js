@@ -54,7 +54,7 @@ var tetris = {
   // -1: target, 0: empty
   map: [],
 
-  initial_speed: 500,
+  initial_speed: 700,
   // touch/finger controls
   last_pos_x: 0,
   last_pos_y: 0,
@@ -122,6 +122,9 @@ var tetris = {
         tetris.map[i][j] = 0; // No snake on it.
       };
     };
+
+    tetris.alive_snakes = [];
+    tetris.dead_snakes = [];
 
     // tetris.stage.add(tetris.layer_block);
     tetris.stage.add(tetris.layer_snake);
@@ -602,7 +605,9 @@ var tetris = {
   },
 
   update_block: function (snakeid) {
+    console.log('snake ' + snakeid + ', alive: ' + tetris.alive_snakes.indexOf(parseInt(snakeid)));
     if(tetris.alive_snakes.indexOf(parseInt(snakeid)) < 0 ) {
+      console.log('alive_snakes.length = 0');
       return false;
     }
     var direction = tetris.snake_dirs[snakeid][0];

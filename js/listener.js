@@ -99,10 +99,10 @@ $(function(){
 
 	socket.on('clients_update', function(data){
 		var members = data.clients;
-		tetris.alive_snakes = [];
-    	tetris.dead_snakes = [];
 		for (var key in members) {
+			console.log('Get member: ' + members[key]);
 			if (tetris.display_snake[members[key]] == undefined) {
+				console.log('Store member: ' + members[key]);
 				tetris.pinch_snake(members[key]);
 			}
 		}
