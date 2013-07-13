@@ -59,12 +59,12 @@ a {
   display: none;
 }
 #page_oauth {
-  padding: 5%;
+  padding: 20%;
   vertical-align: middle;
 }
 
 #page_home {
-  padding: 5%;
+  padding-top: 30%;
   vertical-align: middle;
 }
 #page_game {
