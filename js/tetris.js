@@ -277,29 +277,26 @@ var tetris = {
   // assuming input id is an integer
   update_snake_status: function(dead_snake_id) {
     var index = tetris.alive_snakes.indexOf(dead_snake_id);
-    // dead snake is not removed
+    // dead snake is in the snake list...
     if(index >= 0) {
       // remove from alive_snakes
       tetris.alive_snakes.splice(index, 1);
       // add to dead_snakes
       tetris.dead_snakes.push(dead_snake_id);
-      tetris.kill_snake(dead_snake_id);
+      // remove this snake from this browser
+      tetris.remove_snake(dead_snake_id);
       console.log(dead_snake_id + " is dead");
     }
 
+    // check for game over
     if(tetris.alive_snakes.length == 0) {
       tetris.game_over(dead_snake_id == tetris.self_id);
     }
 
   },
 
-  kill_snake: function(snakeid) {
-    // update snake status
+  remove_snake: function(snakeid) {
     var i, j, element_id, element, index;
-    console.log("sending kill: " + snakeid);
-    send_dead_id(snakeid);
-    tetris.update_snake_status(snakeid);
-
     // clean map for snake id
     for (i = 0; i < tetris.rows - 1; i++) {
       for (j = 0; j < tetris.cols; j++) {
@@ -310,18 +307,28 @@ var tetris = {
     }
     
     // remove from layer
-    for (i = 0; i < tetris.display_snake[snakeid].length; i++) {
-      element_id = tetris.display_snake[snakeid][i]._id;
-      for (j = 0, index = 0; j < tetris.layer_snake.children.length; j++, index++) {
-        if(element_id == tetris.layer_snake.children[index]._id) {
-          element = tetris.layer_snake.children.splice(index, 1);
-          index--;
+    if(tetris.display_snake[snakeid] != undefined) {
+      for (i = 0; i < tetris.display_snake[snakeid].length; i++) {
+        element_id = tetris.display_snake[snakeid][i]._id;
+        for (j = 0, index = 0; j < tetris.layer_snake.children.length; j++, index++) {
+          if(element_id == tetris.layer_snake.children[index]._id) {
+            element = tetris.layer_snake.children.splice(index, 1);
+            index--;
+          }
         }
       }
     }
-
     // clean display snake
     tetris.display_snake.splice(tetris.display_snake.indexOf(snakeid), 1);
+  },
+
+  kill_snake: function(snakeid) {
+    // update snake status
+    console.log("sending kill: " + snakeid);
+    send_dead_id(snakeid);
+    tetris.update_snake_status(snakeid);
+    //tetris.remove_snake(snakeid);
+
 
   },
 
