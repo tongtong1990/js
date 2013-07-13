@@ -551,6 +551,9 @@ var tetris = {
   },
 
   update_block: function (snakeid) {
+    if(tetris.alive_snakes.indexOf(parseInt(snakeid)) < 0 || tetris.display_snake[snakeid] == undefined) {
+      return false;
+    }
     var direction = tetris.snake_dirs[snakeid][0];
     var i;
     var next_position = tetris.next_position(direction, snakeid);
