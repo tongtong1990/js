@@ -39,6 +39,18 @@ $(function(){
 		socket.emit('broadcast_food',{pic_id:new_pic_id, pic_src:pic_src});
 	});
 
+	socket.on('record_what_my_snake_eat',function(data){
+		console.log('here!!');
+		var pic_id = data.pic_id;
+		var pic_src = data.pic_src;
+		var pname = data.pname;
+		var profile_url = data.profile_url;
+		if(!my_pic_id.hasOwnProperty(pic_id)){
+			//add to the list
+			PYMK_pic_id[pic_id] = {pic_src:pic_src, pname:pname, profile_url:profile_url};
+		}
+	});
+
 	socket.on('snake_eat',function(data){
 
 		// alert('snake ' + data.snake_id + ' ' + data.pic_id);

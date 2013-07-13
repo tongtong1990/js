@@ -13,6 +13,10 @@ function eat(snake_id, pic_id){
 	socket.emit('eat',{snake_id:snake_id, pic_id:pic_id});
 }
 
+function send_record(snake_id, pic_id, pic_src, owner_name, profile_url){
+	socket.emit('send_record_to_snake_owner',{snake_id: snake_id, pic_id: pic_id, pic_src:pic_src, owner_name:owner_name, profile_url:profile_url});
+}
+
 function send_control_signal(snake_id,head_device,control_signal){
 	socket.emit('control_signal',{snake_id:snake_id,target_id:head_device,control_signal:control_signal});
 }

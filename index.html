@@ -14,6 +14,11 @@
 
 <body>
 
+<script>
+  var my_pic_id = [];
+  var PYMK_pic_id = [];
+</script>
+
 <div id="page">
     <div id="page_oauth" class="page" style="display: block;">
       <h1>Snakie</h1>
@@ -129,9 +134,10 @@ function setConnections(connections) {
     
     /* picture url not always there, must be defensive */
     if (connections[id].hasOwnProperty('pictureUrl')) {
-      connHTML = connHTML + "<img id=\"" + connections[id].id +"\" style=\"display:none\" align=\"baseline\" src=\"" + connections[id].pictureUrl + "\"></a>";
+      connHTML = connHTML + "<img id=\"" + connections[id].id +"\" style=\"display:none\" full_name=\"" + connections[id].firstName + " " + connections[id].lastName + "\" public_url=\"" + connections[id].publicProfileUrl +"\" align=\"baseline\" src=\"" + connections[id].pictureUrl + "\"></a>";
       ids[cnt] = connections[id].id;
       cnt ++;
+      my_pic_id[connections[id].id] = connections[id].firstName;
     }
   }
 
