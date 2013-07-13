@@ -181,7 +181,7 @@ var tetris = {
           x: tetris.block_width / 2,
           y: snake.pos,
           radius: tetris.block_width / (2 * tetris.scale) - 2,
-          stroke: tetris.color_mappings[snake.snakeid],
+          stroke: tetris.color_mappings[snake.snakeid % 5],
           strokeWidth: 3
       });
       tetris.layer_snake.add(tetris.display_snake[snake.snakeid][0]);
@@ -193,7 +193,7 @@ var tetris = {
           x: tetris.block_width * tetris.cols - tetris.block_width / 2,
           y: snake.pos,
           radius: tetris.block_width / (2 * tetris.scale) - 2,
-          stroke: tetris.color_mappings[snake.snakeid],
+          stroke: tetris.color_mappings[snake.snakeid % 5],
           strokeWidth: 3
       });
       tetris.layer_snake.add(tetris.display_snake[snake.snakeid][0]);
@@ -201,12 +201,15 @@ var tetris = {
       tetris.map[Math.floor(snake.pos/tetris.block_width)][tetris.cols-1] = snake.snakeid;
       tetris.head_dir[snake.snakeid] = 2;
     }
-    tetris.display_snake[snake.snakeid][0].setFill(tetris.color_mappings[snake.snakeid]);
+    tetris.display_snake[snake.snakeid][0].setFill(tetris.color_mappings[snake.snakeid % 5]);
     tetris.display_snake[snake.snakeid][0].setScale(tetris.scale);
 
-    setTimeout(function(){
-      tetris.snake_move(snake.snakeid);
-    },tetris.initial_speed);
+    if(tetris.timeout_func[snake.snakeid] == undefined){
+      setTimeout(function(){
+        tetris.snake_move(snake.snakeid);
+      },1000);
+    }
+
   },
 
   init_snake: function () {
@@ -227,7 +230,7 @@ var tetris = {
         x: (tetris.init_len - j) * tetris.block_width + tetris.block_width / 2,
         y: tetris.block_width / 2,
         radius: tetris.block_width / (2 * tetris.scale) - 2,
-        stroke: tetris.color_mappings[tetris.self_id],
+        stroke: tetris.color_mappings[tetris.self_id % 5],
         strokeWidth: 3
       });
       tetris.layer_snake.add(tetris.display_snake[tetris.self_id][j]);
@@ -247,7 +250,7 @@ var tetris = {
         tetris.snake_imgs[tetris.self_id][i] = ids[i];
         tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
-        tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
+        tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id % 5]);
       }
       tetris.display_snake[tetris.self_id][i].setScale(tetris.scale);
     }
@@ -369,7 +372,7 @@ var tetris = {
     tetris.display_snake[snakeid][tail_index] = tetris.target;
     tetris.display_snake[snakeid][tail_index].setX(tail_x);
     tetris.display_snake[snakeid][tail_index].setY(tail_y);
-    tetris.display_snake[snakeid][tail_index].setStroke(tetris.color_mappings[snakeid]);
+    tetris.display_snake[snakeid][tail_index].setStroke(tetris.color_mappings[snakeid % 5]);
 
     // Remove target
     tetris.target = null;
@@ -533,7 +536,6 @@ var tetris = {
     var head_in_dir = null;
     var head_in_img = null;
     if (tetris.display_snake[snakeid].length <= tetris.snake_imgs[snakeid].length) {
-      alert(snakeid);
       head_in_x = tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].getAbsolutePosition().x;
       head_in_y = tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].getAbsolutePosition().y;
       head_in_dir = tetris.snake_dirs[snakeid][tetris.display_snake[snakeid].length - 1];
@@ -586,7 +588,7 @@ var tetris = {
         y: head_in_y,
         radius: tetris.block_width / (2 * tetris.scale) - 2,
         fillPatternImage: head_in_img,
-        stroke: tetris.color_mappings[snakeid],
+        stroke: tetris.color_mappings[snakeid % 5],
         strokeWidth: 3
       });
       tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
@@ -615,8 +617,7 @@ var tetris = {
   },
 
   remove_snake_on_this_screen: function(snakeid) {
-    console.log('remove the time out');
-    clearTimeout(tetris.timeout_func[snakeid]);
+    //clearTimeout(tetris.timeout_func[snakeid]);
   },
 
   change_head: function(head_device) {
