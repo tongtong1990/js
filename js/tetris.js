@@ -86,8 +86,6 @@ var tetris = {
     document.getElementById('bt_right').addEventListener('click', function() {
       tetris.move_right();
     });
-
-
     // $('#bt_left').click(function() {alert('');tetris.move_left()});
 
     tetris.block_width = tetris.page.offsetWidth * tetris.block_width_standard;
