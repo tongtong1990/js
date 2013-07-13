@@ -12,10 +12,11 @@ var pinch_pair = {};
 io.set('log level', 1);
 io.sockets.on('connection', function (socket) {
   
-  console.log('client ', socket.id);
   clients[socket.id] = socket;
   players[socket.id] = numClients;
   users[numClients] = socket.id;
+  console.log('client ', socket.id + " " + numClients);
+  console.log(users);
   numClients++;
 
   socket.on('conn_left', function (data) {
@@ -124,6 +125,20 @@ io.sockets.on('connection', function (socket) {
     var target = clients[users[target_id]];
     if(target != undefined){
       target.emit('coming_control_signal',{snake_id:snake_id, control_signal:control_signal});
+    }
+  });
+
+  socket.on('send_record_to_snake_owner',function(data){
+    var snake_id = data.snake_id;
+    var pic_id = data.pic_id;
+    var pic_src = data.pic_src;
+    var pname = data.owner_name;
+    var profile_url = data.profile_url;
+    var target = clients[users[snake_id]];
+    console.log(users);
+    console.log(snake_id + ":" + target);
+    if(target != undefined){
+      target.emit('record_what_my_snake_eat',{pic_id:pic_id, pic_src:pic_src, pname:pname, profile_url:profile_url});
     }
   });
 

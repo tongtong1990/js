@@ -54,7 +54,7 @@ var tetris = {
   // -1: target, 0: empty
   map: [],
 
-  initial_speed: 750,
+  initial_speed: 500,
   // touch/finger controls
   last_pos_x: 0,
   last_pos_y: 0,
@@ -288,6 +288,8 @@ var tetris = {
       console.log(dead_snake_id + " is dead");
     }
 
+
+    console.log();
     // check for game over
     if(tetris.alive_snakes.length == 0) {
       tetris.game_over(dead_snake_id == tetris.self_id);
@@ -438,6 +440,13 @@ var tetris = {
     tetris.snake_imgs[snakeid][tail_index - 1] = tetris.target_id;
     // Broadcast the image id to others
     eat(snakeid, tetris.target_id);
+    // tell the owner
+    var image = document.getElementById(tetris.target_id);
+    var pic_src = image.src;
+    var pname = image.getAttribute("full_name");
+    var profile_url = image.getAttribute("public_url");
+
+    send_record(snakeid, tetris.target_id, pic_src, pname, profile_url);
 
     var period = 2000;
     var animCount = 15;
@@ -510,6 +519,35 @@ var tetris = {
 
   game_over: function (win) {
     tetris.state = 'game_over';
+    var html = '<h2>Game Over</h2>';
+    if(win)
+      html += '<h3>Win</h3>';
+    else
+      html += '<h3>Lose</h3>';
+    html += 'people you may know:';
+    html += '<table id=\"fuck\">';
+    var cnt_img = 0;
+    for(keys in PYMK_pic_id){
+      if(cnt_img > 10)  break;
+      cnt_img ++;
+      var cur_value = PYMK_pic_id[keys];
+      var member_id = keys;
+      var pic_src = cur_value.pic_src;
+      var pname = cur_value.pname;
+      var profile_url = cur_value.profile_url;
+      html += '<tr style=\"width:220px; float:left;\">';
+      html += "<td><img src=\"" + pic_src + "\"></td>";
+      html += "<td><br/>" + pname + "<br/><a href=\"" + profile_url + "\" target=\"_blank\"> see profile! </a><br/></td>";
+      html += '</tr>';
+    }
+    html += '</table>';
+    tetris.overlay.innerHTML = html;
+    tetris.overlay.style.display = 'block';
+  },
+
+  /*
+  game_over: function (win) {
+    tetris.state = 'game_over';
 
     var html = '<h2>Game Over</h2>';
     if(win)
@@ -529,6 +567,7 @@ var tetris = {
       tetris.show_home();
     });
   },
+  */
 
   next_position: function(direction, snakeid) {
     var position;
