@@ -602,6 +602,10 @@ var tetris = {
       var curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
       var curY = tetris.display_snake[snakeid][i].getAbsolutePosition().y;
 
+      // Update map
+      if (i == tetris.display_snake[snakeid].length - 1) // snake tail
+        tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 0;
+
       if (i == 0) {
         if (tetris.snake_dirs[snakeid][i] == 0) {
           tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
@@ -623,9 +627,9 @@ var tetris = {
           tetris.snake_eat(snakeid, tail_x, tail_y, tail_dir);
         }
 
-        if (tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] != undefined) {
-          tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = snakeid;
-        }
+        // if (tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] != undefined) {
+        tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = snakeid;
+        // }
 
       } else {
         var next_x = tetris.display_snake[snakeid][i - 1].getAbsolutePosition().x;
@@ -637,9 +641,7 @@ var tetris = {
         tetris.snake_dirs[snakeid][i] = tetris.snake_dirs[snakeid][i - 1];
       }
 
-      // Update map
-      if (i == tetris.display_snake[snakeid].length - 1 && tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] != undefined) // snake tail
-        tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 0;
+
     }
 
     // Check whether there are snakes coming
