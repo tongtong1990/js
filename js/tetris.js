@@ -53,7 +53,6 @@ var tetris = {
   init_len: 1,
   // -1: target, 0: empty
   map: [],
-
   initial_speed: 700,
   // touch/finger controls
   last_pos_x: 0,
@@ -908,7 +907,6 @@ var tetris = {
   getNewTailPic: function(pic_id) {
     return document.getElementById(pic_id);
   },
-
   resize: function() {
     tetris.block_width = tetris.page.offsetWidth * tetris.block_width_standard;
     tetris.game_col.style.width = tetris.block_width * tetris.cols + 'px';
