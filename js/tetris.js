@@ -267,13 +267,17 @@ var tetris = {
       tetris.alive_snakes.splice(index, 1);
       // add to dead_snakes
       tetris.dead_snakes.push(dead_snake_id);
+      kill_snake(dead_snake_id);
       console.log(dead_snake_id + " is dead");
     }
 
     if(tetris.alive_snakes.length == 0) {
       tetris.game_over(dead_snake_id == tetris.self_id);
     }
+
   },
+
+
 
   kill_snake: function(snakeid) {
     // update snake status
