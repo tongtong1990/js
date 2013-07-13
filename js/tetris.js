@@ -540,8 +540,21 @@ var tetris = {
         return false;
       }
     } else if(next_position > 0) {
-      alert("hit: "  + next_position);
-      return false;
+      // hitting yourself
+      if(next_position == snakeid) {
+        alert(snakeid + " hit itself");
+        tetris.kill_snake(snakeid);
+        return false;  
+      // this snake eats the other snake
+      } else if(tetris.display_snake[snakeid].length > tetris.display_snake[next_position].length) {
+        alert(snakeid + " eats " + next_position);
+        tetris.kill_snake(next_position);
+        return false;
+      } else {
+        alert(next_position + " eats " + snakeid);
+        tetris.kill_snake(snakeid);
+        return true;
+      }
     }
 
     // Yingchao test purpose
