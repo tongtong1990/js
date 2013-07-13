@@ -417,14 +417,14 @@ var tetris = {
     eat(snakeid, tetris.target_id);
 
     var period = 2000;
-    var animCount = 50;
+    var animCount = 15;
     var anim = new Kinetic.Animation(function(frame) {
-      var scale = Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
-      tetris.display_snake[snakeid][0].setScale(scale);
+      var scale = 0.4 * Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
+      tetris.display_snake[snakeid][tail_index].setScale(scale);
       animCount --;
       if(animCount == 0) {
         anim.stop();
-        tetris.display_snake[snakeid][0].setScale(tetris.scale);
+        tetris.display_snake[snakeid][tail_index].setScale(tetris.scale);
       }
     }, tetris.layer_snake);
     anim.start();
@@ -600,19 +600,6 @@ var tetris = {
       if (i == tetris.display_snake[snakeid].length - 1) // snake tail
         tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 0;
 
-<<<<<<< HEAD
-      if (tetris.snake_dirs[snakeid][i] == 0) {
-        tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
-      } else if (tetris.snake_dirs[snakeid][i] == 1) {
-        tetris.display_snake[snakeid][i].setY(curY + tetris.block_width);
-      } else if (tetris.snake_dirs[snakeid][i] == 2) {
-        tetris.display_snake[snakeid][i].setX(curX - tetris.block_width);
-      } else if (tetris.snake_dirs[snakeid][i] == 3) {
-        tetris.display_snake[snakeid][i].setY(curY - tetris.block_width);
-      }
-
-      if (i == 0) // head
-=======
       if (i == 0) {
         if (tetris.snake_dirs[snakeid][i] == 0) {
           tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
@@ -623,8 +610,6 @@ var tetris = {
         } else if (tetris.snake_dirs[snakeid][i] == 3) {
           tetris.display_snake[snakeid][i].setY(curY - tetris.block_width);
         }
-
->>>>>>> 06e5aacd1a79ada0cf02fb422e5c3683a0ce50be
         tetris.snake_dirs[snakeid][i] = tetris.head_dir[snakeid];
 
         curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
@@ -686,15 +671,6 @@ var tetris = {
           tetris.display_snake[i][j + 1].setY(coming_y);
         }
         tetris.snake_dirs[i][j + 1] = tetris.snake_dirs[i][j];
-
-<<<<<<< HEAD
-    if(tetris.isLeaving[snakeid] == true){
-      tetris.start_index[snakeid] ++;
-      if(tetris.start_index[snakeid] == tetris.display_snake[snakeid].length){
-        tetris.remove_snake_on_this_screen(snakeid);
-        }
-      }
-=======
         // Increase index
         tetris.snake_coming_index[key]++;
         if (tetris.snake_coming_index[key] >= tetris.snake_imgs[i].length) {
@@ -714,7 +690,6 @@ var tetris = {
     // }
 
     return true;
->>>>>>> 06e5aacd1a79ada0cf02fb422e5c3683a0ce50be
   },
 
   show_block: function (snakeid) {

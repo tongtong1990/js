@@ -1,7 +1,5 @@
 // var socket = io.connect('http://172.19.196.93:9202');
 var socket = io.connect('http://172.19.213.51:9200');
-
->>>>>>> 06e5aacd1a79ada0cf02fb422e5c3683a0ce50be
 function go_to_right_screen(tself_id, tright_id, snake_id, head_coord){
 	socket.emit('break_wall_from_left',{self_id:tself_id, target_id:tright_id, snake_id:snake_id, head_location:head_coord});
 }
