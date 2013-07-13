@@ -205,9 +205,12 @@ var tetris = {
     tetris.display_snake[snake.snakeid][0].setFill(tetris.color_mappings[snake.snakeid % tetris.color_variations]);
     tetris.display_snake[snake.snakeid][0].setScale(tetris.scale);
 
-    setTimeout(function(){
-      tetris.snake_move(snake.snakeid);
-    },tetris.initial_speed);
+    if(tetris.timeout_func[snake.snakeid] == undefined){
+      setTimeout(function(){
+        tetris.snake_move(snake.snakeid);
+      },1000);
+    }
+
   },
 
   init_snake: function () {
@@ -250,6 +253,7 @@ var tetris = {
       } else {
         tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id % tetris.color_variations]);
       }
+
       tetris.display_snake[tetris.self_id][i].setScale(tetris.scale);
     }
   },
@@ -384,6 +388,18 @@ var tetris = {
     // Broadcast the image id to others
     eat(snakeid, tetris.target_id);
 
+    var period = 2000;
+    var animCount = 70;
+    var anim = new Kinetic.Animation(function(frame) {
+      var scale = Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
+      tetris.display_snake[snakeid][0].setScale(scale);
+      animCount --;
+      if(animCount == 0) {
+        anim.stop();
+        tetris.display_snake[snakeid][0].setScale(tetris.scale);
+      }
+    }, tetris.layer_snake);
+    anim.start();
     // Generate another target
     tetris.generate_target();
   },
@@ -527,6 +543,11 @@ var tetris = {
       return false;
     }
 
+    // Yingchao test purpose
+    // for(i = 1 ; i < tetris.display_snake[snakeid].length; i ++) {
+    //   tetris.display_snake[snakeid][i].rotate(30);
+    // }
+
     // Check whether the snake can eat something
     var tail_index = tetris.display_snake[snakeid].length - 1;
     var tail_x = tetris.display_snake[snakeid][tail_index].getAbsolutePosition().x;
@@ -538,7 +559,6 @@ var tetris = {
     var head_in_dir = null;
     var head_in_img = null;
     if (tetris.display_snake[snakeid].length <= tetris.snake_imgs[snakeid].length) {
-      alert(snakeid);
       head_in_x = tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].getAbsolutePosition().x;
       head_in_y = tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].getAbsolutePosition().y;
       head_in_dir = tetris.snake_dirs[snakeid][tetris.display_snake[snakeid].length - 1];
@@ -619,8 +639,7 @@ var tetris = {
   },
 
   remove_snake_on_this_screen: function(snakeid) {
-    console.log('remove the time out');
-    clearTimeout(tetris.timeout_func[snakeid]);
+    //clearTimeout(tetris.timeout_func[snakeid]);
   },
 
   change_head: function(head_device) {
