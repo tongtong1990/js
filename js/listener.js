@@ -57,7 +57,7 @@ $(function(){
 		var tail_y = tail.getY();
 		if( tail != undefined && tail_x > 0 &&  tail_x < tetris.screen_width && tail_y > 0 && tail_y < tetris.screen_height ) {
 			var tail_img = tetris.getNewTailPic(pic_id);
-			tetris.display_snake[snakeid][new_tail_index]= new Kinetic.Circle({
+			tetris.display_snake[snake_id][new_tail_index]= new Kinetic.Circle({
 		        x: tail_x,
 		        y: tail_y,
 		        radius: tetris.block_width / (2 * tetris.scale) - 2,
