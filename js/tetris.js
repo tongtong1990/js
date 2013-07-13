@@ -228,7 +228,7 @@ var tetris = {
 
   init_snake: function () {
 
-    console.log("type: " + typeof(tetris.self_id));
+    //console.log("type: " + typeof(tetris.self_id));
 
     tetris.display_snake[tetris.self_id] = [];
     tetris.snake_dirs[tetris.self_id] = [];
@@ -261,19 +261,21 @@ var tetris = {
     tetris.head_dir[tetris.self_id] = 0;
 
     // Initialize images
-    for (var i = 0; i < tetris.init_len; i++) {
-      if (i != 0) {
-        var image = document.getElementById(ids[i]);
+    for (var Ti = 0; Ti < tetris.init_len; Ti++) {
+      if (Ti != 0) {
+        var image = document.getElementById(ids[Ti]);
         tetris.display_snake[tetris.self_id][i].setFillPatternImage(image);
         // Update snake_imgs
-        tetris.snake_imgs[tetris.self_id][i] = ids[i];
-        tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
+        tetris.snake_imgs[tetris.self_id][Ti] = ids[Ti];
+        tetris.display_snake[tetris.self_id][Ti].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
-        tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id % tetris.color_variations]);
+        alert('get called');
+        tetris.display_snake[tetris.self_id][Ti].setFill(tetris.color_mappings[tetris.self_id % tetris.color_variations]);
       }
 
-      tetris.display_snake[tetris.self_id][i].setScale(tetris.scale);
+      tetris.display_snake[tetris.self_id][Ti].setScale(tetris.scale);
     }
+    alert('only once');
   },
 
   // assuming input id is an integer
@@ -352,14 +354,14 @@ var tetris = {
     tetris.clear_board();
     tetris.init_snake();
     var newFood = tetris.generate_target();
-    //tetris.layer_snake.draw();
+    tetris.layer_snake.draw();
 //    if( newFood != undefined)
 //        init_send_new_food(newFood);
 
     setTimeout(function () {
       // hide the address bar
       window.scrollTo(0, 1);
-      tetris.snake_move(tetris.self_id);
+        tetris.snake_move(tetris.self_id);
     }, 0);
   },
 
