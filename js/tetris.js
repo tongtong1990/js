@@ -227,6 +227,7 @@ var tetris = {
   },
 
   init_snake: function () {
+    console.log(tetris.self_id);
     tetris.display_snake[tetris.self_id] = [];
     tetris.snake_dirs[tetris.self_id] = [];
     tetris.snake_imgs[tetris.self_id] = [];
@@ -266,13 +267,11 @@ var tetris = {
         tetris.snake_imgs[tetris.self_id][Ti] = ids[Ti];
         tetris.display_snake[tetris.self_id][Ti].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
-        alert('get called');
         tetris.display_snake[tetris.self_id][Ti].setFill(tetris.color_mappings[tetris.self_id % tetris.color_variations]);
       }
 
       tetris.display_snake[tetris.self_id][Ti].setScale(tetris.scale);
     }
-    alert('only once');
   },
 
   // assuming input id is an integer
