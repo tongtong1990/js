@@ -23,6 +23,10 @@ function init_send_new_food( newFood ) {
 	socket.emit('broadcast_food',{pic_id:new_pic_id, pic_src:pic_src});
 }
 
+function send_new_food(pic_id, pic_src){
+	socket.emit('broadcast_food',{pic_id:pic_id, pic_src:pic_src});
+}
+
 function send_dead_id( dead_id) {
 	socket.emit('send_dead_id', {dead_id: dead_id});
 }

@@ -54,7 +54,7 @@ var tetris = {
   // -1: target, 0: empty
   map: [],
 
-  initial_speed: 1000,
+  initial_speed: 750,
   // touch/finger controls
   last_pos_x: 0,
   last_pos_y: 0,
@@ -227,9 +227,6 @@ var tetris = {
   },
 
   init_snake: function () {
-
-    //console.log("type: " + typeof(tetris.self_id));
-
     tetris.display_snake[tetris.self_id] = [];
     tetris.snake_dirs[tetris.self_id] = [];
     tetris.snake_imgs[tetris.self_id] = [];
@@ -280,7 +277,6 @@ var tetris = {
 
   // assuming input id is an integer
   update_snake_status: function(dead_snake_id) {
-    console.log(typeof(dead_snake_id));
     var index = tetris.alive_snakes.indexOf(dead_snake_id);
     // dead snake is in the snake list...
     if(index >= 0) {
@@ -378,12 +374,15 @@ var tetris = {
 
   generate_target: function () {
     // Generate a random number
-    console.log(Date.now() + " go into generate target");
     var rand = Math.floor(Math.random() * cnt);
     // Get image
     tetris.target_id = ids[rand];
     var image = document.getElementById(ids[rand]);
 
+    var pic_id = tetris.target_id;
+    var pic_src = image.src;
+
+    send_new_food(pic_id, pic_src);
 
     // Generate target
     var empty_num = tetris.count_empty_blanks();
@@ -459,7 +458,6 @@ var tetris = {
 
   snake_move: function (snakeid) {
     var success_move = tetris.update_block(snakeid);
-    console.log("heart_beat " + snakeid + ":" + success_move);
     if(success_move) {
       tetris.timeout_func[snakeid] = setTimeout(function () {
         tetris.snake_move(snakeid);
@@ -535,7 +533,6 @@ var tetris = {
 
   next_position: function(direction, snakeid) {
     var position;
-    console.log(snakeid);
     var x_position = tetris.display_snake[snakeid][0].getAbsolutePosition().x;
     var y_position = tetris.display_snake[snakeid][0].getAbsolutePosition().y;
     // going to right
@@ -573,7 +570,6 @@ var tetris = {
     var direction = tetris.snake_dirs[snakeid][0];
     var i;
     var next_position = tetris.next_position(direction, snakeid);
-    console.log("next pos is " + next_position);
     // hitting edge
     if(next_position == -2) {
       if ( tetris.right_id != undefined && direction == 0) {
@@ -606,11 +602,11 @@ var tetris = {
       } else if(tetris.display_snake[snakeid].length > tetris.display_snake[next_position].length) {
         alert(snakeid + " eats " + next_position);
         tetris.kill_snake(next_position);
-        return false;
+        return true;
       } else {
         alert(next_position + " eats " + snakeid);
         tetris.kill_snake(snakeid);
-        return true;
+        return false;
       }
     }
 
