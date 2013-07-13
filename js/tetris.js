@@ -55,7 +55,6 @@ var tetris = {
   map: [],
 
   initial_speed: 1000,
-
   // touch/finger controls
   last_pos_x: 0,
   last_pos_y: 0,
@@ -427,14 +426,14 @@ var tetris = {
     eat(snakeid, tetris.target_id);
 
     var period = 2000;
-    var animCount = 70;
+    var animCount = 15;
     var anim = new Kinetic.Animation(function(frame) {
-      var scale = Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
-      tetris.display_snake[snakeid][0].setScale(scale);
+      var scale = 0.4 * Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
+      tetris.display_snake[snakeid][tail_index].setScale(scale);
       animCount --;
       if(animCount == 0) {
         anim.stop();
-        tetris.display_snake[snakeid][0].setScale(tetris.scale);
+        tetris.display_snake[snakeid][tail_index].setScale(tetris.scale);
       }
     }, tetris.layer_snake);
     anim.start();
@@ -597,11 +596,6 @@ var tetris = {
       }
     }
 
-    // Yingchao test purpose
-    // for(i = 1 ; i < tetris.display_snake[snakeid].length; i ++) {
-    //   tetris.display_snake[snakeid][i].rotate(30);
-    // }
-
     // Check whether the snake can eat something
     var tail_index = tetris.display_snake[snakeid].length - 1;
     var tail_x = tetris.display_snake[snakeid][tail_index].getAbsolutePosition().x;
@@ -628,7 +622,6 @@ var tetris = {
         } else if (tetris.snake_dirs[snakeid][i] == 3) {
           tetris.display_snake[snakeid][i].setY(curY - tetris.block_width);
         }
-
         tetris.snake_dirs[snakeid][i] = tetris.head_dir[snakeid];
 
         curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
@@ -690,7 +683,6 @@ var tetris = {
           tetris.display_snake[i][j + 1].setY(coming_y);
         }
         tetris.snake_dirs[i][j + 1] = tetris.snake_dirs[i][j];
-
         // Increase index
         tetris.snake_coming_index[key]++;
         if (tetris.snake_coming_index[key] >= tetris.snake_imgs[i].length) {
@@ -849,6 +841,15 @@ var tetris = {
         };
       };
     });
+  },
+
+  findTailIndex: function(snakeid) {
+    var tail_index = tetris.display_snake[snakeid].length - 1;
+    return tail_index;
+  },
+
+  getNewTailPic: function(pic_id) {
+    return document.getElementById(pic_id);
   },
 
   resize: function() {

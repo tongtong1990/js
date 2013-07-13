@@ -48,6 +48,24 @@ $(function(){
 		var snake_len = tetris.snake_imgs[snake_id].length;
 		// alert('snake_len ' + snake_len);
 		tetris.snake_imgs[snake_id][snake_len] = pic_id;
+		
+		var tail_index = tetris.findTailIndex(snake_id);
+		var new_tail_index = tail_index + 1;
+
+		var tail = tetris.display_snake[snakeid][tail_index];
+		var tail_x = tail.getX();
+		var tail_y = tail.getY();
+		if( tail != undefined && tail_x > 0 &&  tail_x < tetris.screen_width && tail_y > 0 && tail_y < tetris.screen_height ) {
+			var tail_img = tetris.getNewTailPic(pic_id);
+			tetris.display_snake[snakeid][new_tail_index]= new Kinetic.Circle({
+		        x: tail_x,
+		        y: tail_y,
+		        radius: tetris.block_width / (2 * tetris.scale) - 2,
+		        fillPatternImage: tail_img,
+		        stroke: tetris.color_mappings[snakeid % 5],
+		        strokeWidth: 3
+		      });
+		}
 	});
 
 	socket.on('new_food_generated',function(data){
