@@ -101,7 +101,7 @@ function onLinkedInLogin() {
     .fields("id", "firstName", "lastName", "pictureUrl", "publicProfileUrl")
     .result(function(result, metadata) {
       setConnections(result.values, metadata);
-      tetris.init();
+      tetris.Tinit();
     });
 
 }

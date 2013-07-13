@@ -70,7 +70,7 @@ var tetris = {
   color_variations: 6,
   self_color: null,
 
-  init: function () {
+  Tinit: function () {
     tetris.page = document.getElementById('page');
     tetris.page_oauth = document.getElementById('page_oauth');
     tetris.page_home = document.getElementById('page_home');
@@ -243,6 +243,8 @@ var tetris = {
       tetris.display_snake[tetris.self_id][j] = new Kinetic.Circle({
         x: (tetris.init_len - j) * tetris.block_width + tetris.block_width / 2,
         y: tetris.block_width / 2,
+        // x: tetris.screen_width / 2,
+        // y: tetris.screen_height /2,
         radius: tetris.block_width / (2 * tetris.scale) - 2,
         stroke: tetris.color_mappings[tetris.self_id % tetris.color_variations],
         strokeWidth: 3
