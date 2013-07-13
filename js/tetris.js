@@ -229,6 +229,9 @@ var tetris = {
   },
 
   init_snake: function () {
+
+    console.log("type: " + typeof(tetris.self_id));
+
     tetris.display_snake[tetris.self_id] = [];
     tetris.snake_dirs[tetris.self_id] = [];
     tetris.snake_imgs[tetris.self_id] = [];
@@ -275,6 +278,7 @@ var tetris = {
 
   // assuming input id is an integer
   update_snake_status: function(dead_snake_id) {
+    console.log(typeof(dead_snake_id));
     var index = tetris.alive_snakes.indexOf(dead_snake_id);
     // dead snake is in the snake list...
     if(index >= 0) {
@@ -306,6 +310,7 @@ var tetris = {
     }
     
     // remove from layer
+    /*
     if(tetris.display_snake[snakeid] != undefined) {
       for (i = 0; i < tetris.display_snake[snakeid].length; i++) {
         element_id = tetris.display_snake[snakeid][i]._id;
@@ -317,8 +322,17 @@ var tetris = {
         }
       }
     }
+    */
+
+    var cur_snake = tetris.display_snake[snakeid];
+    for(snake_section in cur_snake){
+      tetris.display_snake[snakeid][snake_section].hide();
+    }
+
+    tetris.layer_snake.draw();
+
     // clean display snake
-    tetris.display_snake.splice(tetris.display_snake.indexOf(snakeid), 1);
+    tetris.display_snake[snakeid] = [];
   },
 
   kill_snake: function(snakeid) {
@@ -443,9 +457,9 @@ var tetris = {
 
   snake_move: function (snakeid) {
     var success_move = tetris.update_block(snakeid);
+    console.log("heart_beat " + snakeid + ":" + success_move);
     if(success_move) {
       tetris.timeout_func[snakeid] = setTimeout(function () {
-
         tetris.snake_move(snakeid);
       }, tetris.initial_speed);
     }
@@ -519,6 +533,7 @@ var tetris = {
 
   next_position: function(direction, snakeid) {
     var position;
+    console.log(snakeid);
     var x_position = tetris.display_snake[snakeid][0].getAbsolutePosition().x;
     var y_position = tetris.display_snake[snakeid][0].getAbsolutePosition().y;
     // going to right
@@ -550,12 +565,13 @@ var tetris = {
   },
 
   update_block: function (snakeid) {
-    if(tetris.alive_snakes.indexOf(parseInt(snakeid)) < 0 || tetris.display_snake[snakeid] == undefined) {
+    if(tetris.alive_snakes.indexOf(parseInt(snakeid)) < 0 ) {
       return false;
     }
     var direction = tetris.snake_dirs[snakeid][0];
     var i;
     var next_position = tetris.next_position(direction, snakeid);
+    console.log("next pos is " + next_position);
     // hitting edge
     if(next_position == -2) {
       if ( tetris.right_id != undefined && direction == 0) {
