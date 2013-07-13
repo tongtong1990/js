@@ -227,7 +227,7 @@ var tetris = {
         y: tetris.block_width / 2,
         radius: tetris.block_width / (2 * tetris.scale) - 2,
         stroke: tetris.color_mappings[tetris.self_id],
-        strokeWidth: 3
+        strokeWidth: 3,
       });
       tetris.layer_snake.add(tetris.display_snake[tetris.self_id][j]);
       // Direction of this part of the snake
@@ -248,6 +248,7 @@ var tetris = {
       } else {
         tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id]);
       }
+
       tetris.display_snake[tetris.self_id][i].setScale(tetris.scale);
     }
   },
@@ -382,6 +383,18 @@ var tetris = {
     // Broadcast the image id to others
     eat(snakeid, tetris.target_id);
 
+    var period = 2000;
+    var animCount = 70;
+    var anim = new Kinetic.Animation(function(frame) {
+      var scale = Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
+      tetris.display_snake[snakeid][0].setScale(scale);
+      animCount --;
+      if(animCount == 0) {
+        anim.stop();
+        tetris.display_snake[snakeid][0].setScale(tetris.scale);
+      }
+    }, tetris.layer_snake);
+    anim.start();
     // Generate another target
     tetris.generate_target();
   },
@@ -491,6 +504,11 @@ var tetris = {
         tetris.kill_snake(snakeid);
       }
     }
+
+    // Yingchao test purpose
+    // for(i = 1 ; i < tetris.display_snake[snakeid].length; i ++) {
+    //   tetris.display_snake[snakeid][i].rotate(30);
+    // }
 
     // Check whether the snake can eat something
     var tail_index = tetris.display_snake[snakeid].length - 1;
