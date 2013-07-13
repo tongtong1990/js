@@ -55,7 +55,6 @@ var tetris = {
   map: [],
 
   initial_speed: 1000,
-
   // touch/finger controls
   last_pos_x: 0,
   last_pos_y: 0,
@@ -218,10 +217,12 @@ var tetris = {
       }
     }
 
+    tetris.show_block(snake.snakeid);
+
     if(tetris.timeout_func[snake.snakeid] == undefined){
       setTimeout(function(){
         tetris.snake_move(snake.snakeid);
-      },200);
+      },tetris.initial_speed);
     }
   },
 
@@ -273,29 +274,26 @@ var tetris = {
   // assuming input id is an integer
   update_snake_status: function(dead_snake_id) {
     var index = tetris.alive_snakes.indexOf(dead_snake_id);
-    // dead snake is not removed
+    // dead snake is in the snake list...
     if(index >= 0) {
       // remove from alive_snakes
       tetris.alive_snakes.splice(index, 1);
       // add to dead_snakes
       tetris.dead_snakes.push(dead_snake_id);
-      tetris.kill_snake(dead_snake_id);
+      // remove this snake from this browser
+      tetris.remove_snake(dead_snake_id);
       console.log(dead_snake_id + " is dead");
     }
 
+    // check for game over
     if(tetris.alive_snakes.length == 0) {
       tetris.game_over(dead_snake_id == tetris.self_id);
     }
 
   },
 
-  kill_snake: function(snakeid) {
-    // update snake status
+  remove_snake: function(snakeid) {
     var i, j, element_id, element, index;
-    console.log("sending kill: " + snakeid);
-    send_dead_id(snakeid);
-    tetris.update_snake_status(snakeid);
-
     // clean map for snake id
     for (i = 0; i < tetris.rows - 1; i++) {
       for (j = 0; j < tetris.cols; j++) {
@@ -306,18 +304,28 @@ var tetris = {
     }
     
     // remove from layer
-    for (i = 0; i < tetris.display_snake[snakeid].length; i++) {
-      element_id = tetris.display_snake[snakeid][i]._id;
-      for (j = 0, index = 0; j < tetris.layer_snake.children.length; j++, index++) {
-        if(element_id == tetris.layer_snake.children[index]._id) {
-          element = tetris.layer_snake.children.splice(index, 1);
-          index--;
+    if(tetris.display_snake[snakeid] != undefined) {
+      for (i = 0; i < tetris.display_snake[snakeid].length; i++) {
+        element_id = tetris.display_snake[snakeid][i]._id;
+        for (j = 0, index = 0; j < tetris.layer_snake.children.length; j++, index++) {
+          if(element_id == tetris.layer_snake.children[index]._id) {
+            element = tetris.layer_snake.children.splice(index, 1);
+            index--;
+          }
         }
       }
     }
-
     // clean display snake
     tetris.display_snake.splice(tetris.display_snake.indexOf(snakeid), 1);
+  },
+
+  kill_snake: function(snakeid) {
+    // update snake status
+    console.log("sending kill: " + snakeid);
+    send_dead_id(snakeid);
+    tetris.update_snake_status(snakeid);
+    //tetris.remove_snake(snakeid);
+
 
   },
 
@@ -416,14 +424,14 @@ var tetris = {
     eat(snakeid, tetris.target_id);
 
     var period = 2000;
-    var animCount = 70;
+    var animCount = 15;
     var anim = new Kinetic.Animation(function(frame) {
-      var scale = Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
-      tetris.display_snake[snakeid][0].setScale(scale);
+      var scale = 0.4 * Math.sin(frame.time * 2 * Math.PI / period) + 0.001;
+      tetris.display_snake[snakeid][tail_index].setScale(scale);
       animCount --;
       if(animCount == 0) {
         anim.stop();
-        tetris.display_snake[snakeid][0].setScale(tetris.scale);
+        tetris.display_snake[snakeid][tail_index].setScale(tetris.scale);
       }
     }, tetris.layer_snake);
     anim.start();
@@ -540,6 +548,9 @@ var tetris = {
   },
 
   update_block: function (snakeid) {
+    if(tetris.alive_snakes.indexOf(parseInt(snakeid)) < 0 || tetris.display_snake[snakeid] == undefined) {
+      return false;
+    }
     var direction = tetris.snake_dirs[snakeid][0];
     var i;
     var next_position = tetris.next_position(direction, snakeid);
@@ -583,11 +594,6 @@ var tetris = {
       }
     }
 
-    // Yingchao test purpose
-    // for(i = 1 ; i < tetris.display_snake[snakeid].length; i ++) {
-    //   tetris.display_snake[snakeid][i].rotate(30);
-    // }
-
     // Check whether the snake can eat something
     var tail_index = tetris.display_snake[snakeid].length - 1;
     var tail_x = tetris.display_snake[snakeid][tail_index].getAbsolutePosition().x;
@@ -614,7 +620,6 @@ var tetris = {
         } else if (tetris.snake_dirs[snakeid][i] == 3) {
           tetris.display_snake[snakeid][i].setY(curY - tetris.block_width);
         }
-
         tetris.snake_dirs[snakeid][i] = tetris.head_dir[snakeid];
 
         curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
@@ -676,7 +681,6 @@ var tetris = {
           tetris.display_snake[i][j + 1].setY(coming_y);
         }
         tetris.snake_dirs[i][j + 1] = tetris.snake_dirs[i][j];
-
         // Increase index
         tetris.snake_coming_index[key]++;
         if (tetris.snake_coming_index[key] >= tetris.snake_imgs[i].length) {
@@ -835,6 +839,15 @@ var tetris = {
         };
       };
     });
+  },
+
+  findTailIndex: function(snakeid) {
+    var tail_index = tetris.display_snake[snakeid].length - 1;
+    return tail_index;
+  },
+
+  getNewTailPic: function(pic_id) {
+    return document.getElementById(pic_id);
   },
 
   resize: function() {
