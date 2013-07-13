@@ -325,6 +325,17 @@ var tetris = {
     }, 0);
   },
 
+  count_empty_blanks: function () {
+    var cnt = 0;
+    for(var i=0; i< tetris.rows-1; i++) {
+      for(var j=0; j<tetris.cols; j++) {
+        if(tetris.map[i][j] == 0)
+          cnt ++;
+      }
+    }
+    return cnt;
+  }
+
   generate_target: function () {
     // Generate a random number
     console.log(Date.now() + " go into generate target");
@@ -333,9 +344,12 @@ var tetris = {
     tetris.target_id = ids[rand];
     var image = document.getElementById(ids[rand]);
 
+
     // Generate target
-    var snake_len = tetris.display_snake[tetris.self_id].length;
-    var target_index = Math.floor(Math.random() * ((tetris.rows - 1) * tetris.cols - snake_len));
+    //var snake_len = tetris.display_snake[tetris.self_id].length;
+    //var target_index = Math.floor(Math.random() * ((tetris.rows - 1) * tetris.cols - snake_len));
+    var empty_num = tetris.count_empty_blanks();
+    var target_index = Math.floor(Math.random() * empty_num);
     var index_cnt = 0;
     for (var i = 0; i < tetris.rows - 1; i++) {
       for (var j = 0; j < tetris.cols; j++) {
