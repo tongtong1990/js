@@ -54,7 +54,7 @@ var tetris = {
   // -1: target, 0: empty
   map: [],
 
-  initial_speed: 750,
+  initial_speed: 700,
   // touch/finger controls
   last_pos_x: 0,
   last_pos_y: 0,
@@ -266,13 +266,13 @@ var tetris = {
         tetris.snake_imgs[tetris.self_id][Ti] = ids[Ti];
         tetris.display_snake[tetris.self_id][Ti].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
-        alert('get called');
+        //alert('get called');
         tetris.display_snake[tetris.self_id][Ti].setFill(tetris.color_mappings[tetris.self_id % tetris.color_variations]);
       }
 
       tetris.display_snake[tetris.self_id][Ti].setScale(tetris.scale);
     }
-    alert('only once');
+    //alert('only once');
   },
 
   // assuming input id is an integer
