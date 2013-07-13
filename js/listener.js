@@ -29,7 +29,7 @@ $(function(){
 
 		tetris.new_snake(snake);
 
-	})
+	});
 
 	socket.on('generate_new_food',function(data){
 		
@@ -97,7 +97,7 @@ $(function(){
 
 	socket.on('dead_snake', function(data){
 		var snakeid = data.dead_id;
-		console.log("got dead id: " + snakeid);
+		console.log("listener got dead id: " + snakeid);
 		tetris.update_snake_status(parseInt(snakeid));
 
 	});

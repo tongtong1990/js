@@ -29,6 +29,8 @@ var tetris = {
   snake_dirs: [],
   snake_imgs: [], // Images of each snake
   head_dir: [],
+  snake_coming: [], // size: 2 * (rows - 1), value: snakeid
+  snake_coming_index: [], 
 
   isLeaving: [],
   timeout_func: [],
@@ -65,6 +67,7 @@ var tetris = {
   left_id: undefined,
   right_id: undefined,
   color_mappings: { 0: 'white', 1: 'blue', 2: 'red', 3: 'green', 4: 'yellow', 5: 'gray' },
+  color_variations: 6,
   self_color: null,
 
   init: function () {
@@ -121,7 +124,6 @@ var tetris = {
         tetris.map[i][j] = 0; // No snake on it.
       };
     };
-    
 
     // tetris.stage.add(tetris.layer_block);
     tetris.stage.add(tetris.layer_snake);
@@ -131,7 +133,6 @@ var tetris = {
 
     tetris.watch_keys();
     tetris.watch_touch();
-
 
     tetris.resize();
     window.addEventListener('resize', function() {
@@ -180,35 +181,49 @@ var tetris = {
           x: tetris.block_width / 2,
           y: snake.pos,
           radius: tetris.block_width / (2 * tetris.scale) - 2,
-          stroke: tetris.color_mappings[snake.snakeid % 5],
+          stroke: tetris.color_mappings[snake.snakeid % tetris.color_variations],
           strokeWidth: 3
       });
+
       tetris.layer_snake.add(tetris.display_snake[snake.snakeid][0]);
       tetris.snake_dirs[snake.snakeid][0] = 0;
       tetris.map[Math.floor(snake.pos/tetris.block_width)][0] = snake.snakeid;
       tetris.head_dir[snake.snakeid] = 0;
-    }else{
+    
+    } else {
       tetris.display_snake[snake.snakeid][0] = new Kinetic.Circle({
           x: tetris.block_width * tetris.cols - tetris.block_width / 2,
           y: snake.pos,
           radius: tetris.block_width / (2 * tetris.scale) - 2,
-          stroke: tetris.color_mappings[snake.snakeid % 5],
+          stroke: tetris.color_mappings[snake.snakeid % tetris.color_variations],
           strokeWidth: 3
       });
+      
       tetris.layer_snake.add(tetris.display_snake[snake.snakeid][0]);
       tetris.snake_dirs[snake.snakeid][0] = 2;
       tetris.map[Math.floor(snake.pos/tetris.block_width)][tetris.cols-1] = snake.snakeid;
       tetris.head_dir[snake.snakeid] = 2;
+
     }
-    tetris.display_snake[snake.snakeid][0].setFill(tetris.color_mappings[snake.snakeid % 5]);
+    tetris.display_snake[snake.snakeid][0].setFill(tetris.color_mappings[snake.snakeid % tetris.color_variations]);
     tetris.display_snake[snake.snakeid][0].setScale(tetris.scale);
+
+    // Update snake_coming to tell machine there is a snake coming from this block.
+    if (tetris.snake_imgs[snake.snakeid].length > 0) {
+      if (snake.direction == 0) { // Snake comes from left
+        tetris.snake_coming[Math.floor(snake.pos / tetris.block_width)] = snake.snakeid;
+        tetris.snake_coming_index[Math.floor(snake.pos / tetris.block_width)] = 0;
+      } else { // Snake comes from right
+        tetris.snake_coming[Math.floor(snake.pos / tetris.block_width) + tetris.rows - 1] = snake.snakeid;
+        tetris.snake_coming_index[Math.floor(snake.pos / tetris.block_width) + tetris.rows - 1] = 0;
+      }
+    }
 
     if(tetris.timeout_func[snake.snakeid] == undefined){
       setTimeout(function(){
         tetris.snake_move(snake.snakeid);
-      },1000);
+      },200);
     }
-
   },
 
   init_snake: function () {
@@ -229,14 +244,14 @@ var tetris = {
         x: (tetris.init_len - j) * tetris.block_width + tetris.block_width / 2,
         y: tetris.block_width / 2,
         radius: tetris.block_width / (2 * tetris.scale) - 2,
-        stroke: tetris.color_mappings[tetris.self_id % 5],
+        stroke: tetris.color_mappings[tetris.self_id % tetris.color_variations],
         strokeWidth: 3
       });
       tetris.layer_snake.add(tetris.display_snake[tetris.self_id][j]);
       // Direction of this part of the snake
       tetris.snake_dirs[tetris.self_id][j] = 0;
       // Change map
-      tetris.map[0][tetris.init_len - j] = 1;
+      tetris.map[0][tetris.init_len - j] = tetris.self_id;
     }
     tetris.head_dir[tetris.self_id] = 0;
 
@@ -249,7 +264,7 @@ var tetris = {
         tetris.snake_imgs[tetris.self_id][i] = ids[i];
         tetris.display_snake[tetris.self_id][i].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
       } else {
-        tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id % 5]);
+        tetris.display_snake[tetris.self_id][i].setFill(tetris.color_mappings[tetris.self_id % tetris.color_variations]);
       }
 
       tetris.display_snake[tetris.self_id][i].setScale(tetris.scale);
@@ -265,24 +280,25 @@ var tetris = {
       tetris.alive_snakes.splice(index, 1);
       // add to dead_snakes
       tetris.dead_snakes.push(dead_snake_id);
+      tetris.kill_snake(dead_snake_id);
       console.log(dead_snake_id + " is dead");
     }
 
     if(tetris.alive_snakes.length == 0) {
       tetris.game_over(dead_snake_id == tetris.self_id);
     }
+
   },
 
   kill_snake: function(snakeid) {
     // update snake status
-    
     var i, j, element_id, element, index;
-    alert(tetris.self_id + " killing " + snakeid);
+    console.log("sending kill: " + snakeid);
     send_dead_id(snakeid);
     tetris.update_snake_status(snakeid);
 
     // clean map for snake id
-    for (i = 0; i < tetris.length; i++) {
+    for (i = 0; i < tetris.rows - 1; i++) {
       for (j = 0; j < tetris.cols; j++) {
         if (tetris.map[i][j] == snakeid) {
           tetris.map[i][j] = 0;
@@ -324,16 +340,29 @@ var tetris = {
     }, 0);
   },
 
+  count_empty_blanks: function () {
+    var cnt = 0;
+    for(var i=0; i< tetris.rows-1; i++) {
+      for(var j=0; j<tetris.cols; j++) {
+        if(tetris.map[i][j] == 0)
+          cnt ++;
+      }
+    }
+    return cnt;
+  },
+
   generate_target: function () {
     // Generate a random number
+    console.log(Date.now() + " go into generate target");
     var rand = Math.floor(Math.random() * cnt);
     // Get image
     tetris.target_id = ids[rand];
     var image = document.getElementById(ids[rand]);
 
+
     // Generate target
-    var snake_len = tetris.display_snake[tetris.self_id].length;
-    var target_index = Math.floor(Math.random() * (tetris.rows - 1) * tetris.cols - snake_len);
+    var empty_num = tetris.count_empty_blanks();
+    var target_index = Math.floor(Math.random() * empty_num);
     var index_cnt = 0;
     for (var i = 0; i < tetris.rows - 1; i++) {
       for (var j = 0; j < tetris.cols; j++) {
@@ -372,14 +401,15 @@ var tetris = {
     tetris.display_snake[snakeid][tail_index] = tetris.target;
     tetris.display_snake[snakeid][tail_index].setX(tail_x);
     tetris.display_snake[snakeid][tail_index].setY(tail_y);
-    tetris.display_snake[snakeid][tail_index].setStroke(tetris.color_mappings[snakeid % 5]);
+    tetris.display_snake[snakeid][tail_index].setStroke(tetris.color_mappings[snakeid % tetris.color_variations]);
 
     // Remove target
     tetris.target = null;
 
     tetris.layer_snake.add(tetris.display_snake[snakeid][tail_index]);
     tetris.snake_dirs[snakeid][tail_index] = tail_dir;
-    tetris.map[Math.floor(tail_y / tetris.block_width)][Math.floor(tail_x / tetris.block_width)] = 1;
+
+    tetris.map[Math.floor(tail_y / tetris.block_width)][Math.floor(tail_x / tetris.block_width)] = snakeid;
 
     // Save image id
     tetris.snake_imgs[snakeid][tail_index - 1] = tetris.target_id;
@@ -403,10 +433,13 @@ var tetris = {
   },
 
   snake_move: function (snakeid) {
-    tetris.update_block(snakeid);
-    tetris.timeout_func[snakeid] = setTimeout(function () {
-      tetris.snake_move(snakeid);
-    }, tetris.initial_speed);
+    var success_move = tetris.update_block(snakeid);
+    if(success_move) {
+      tetris.timeout_func[snakeid] = setTimeout(function () {
+
+        tetris.snake_move(snakeid);
+      }, tetris.initial_speed);
+    }
   },
 
   test_wallbreak: function () {
@@ -418,6 +451,11 @@ var tetris = {
       // Remove target (specifically for game over logic)
       tetris.target.hide();
       tetris.target = null;
+    }
+    for (var i = 0; i < tetris.rows - 1; i++) {
+      for (var j = 0; j < tetris.cols; j++) {
+        tetris.map[i][j] = 0;
+      }
     }
   },
 
@@ -496,7 +534,7 @@ var tetris = {
   // -2: edge, -1: target, 0: empty, otherwise: snakeid
   coordinate_info: function(x_index, y_index) {
     // hitting edge
-    if(x_index < 0 || y_index < 0 || x_index >= tetris.cols || y_index >= tetris.map.length)
+    if(x_index < 0 || y_index < 0 || x_index >= tetris.cols || y_index >= tetris.rows - 1)
       return -2;
     // on map
     return tetris.map[y_index][x_index];
@@ -526,14 +564,23 @@ var tetris = {
       // this snake is dead
       else {
         tetris.kill_snake(snakeid);
+        return false;
       }
-    // hit with snake
     } else if(next_position > 0) {
-      
+      // hitting yourself
       if(next_position == snakeid) {
-        alert("You hit yourself: " + snakeid);
+        alert(snakeid + " hit itself");
+        tetris.kill_snake(snakeid);
+        return false;  
+      // this snake eats the other snake
+      } else if(tetris.display_snake[snakeid].length > tetris.display_snake[next_position].length) {
+        alert(snakeid + " eats " + next_position);
+        tetris.kill_snake(next_position);
+        return false;
       } else {
-        alert("hit: "  + next_position);
+        alert(next_position + " eats " + snakeid);
+        tetris.kill_snake(snakeid);
+        return true;
       }
     }
 
@@ -543,27 +590,17 @@ var tetris = {
     var tail_y = tetris.display_snake[snakeid][tail_index].getAbsolutePosition().y;
     var tail_dir = tetris.snake_dirs[snakeid][tail_index];
 
-    var head_in_x = null;
-    var head_in_y = null;
-    var head_in_dir = null;
-    var head_in_img = null;
-    if (tetris.display_snake[snakeid].length <= tetris.snake_imgs[snakeid].length) {
-      head_in_x = tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].getAbsolutePosition().x;
-      head_in_y = tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].getAbsolutePosition().y;
-      head_in_dir = tetris.snake_dirs[snakeid][tetris.display_snake[snakeid].length - 1];
-      head_in_img = document.getElementById(tetris.snake_imgs[snakeid][tetris.display_snake[snakeid].length - 1]);
-    }
-
     // Update snake position
-    for (var i = tetris.display_snake[snakeid].length - 1; i >= tetris.start_index[snakeid]; i--) {
-
+    for (var i = tetris.display_snake[snakeid].length - 1; i >= 0; i--) {
 
       var curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
       var curY = tetris.display_snake[snakeid][i].getAbsolutePosition().y;
+
       // Update map
       if (i == tetris.display_snake[snakeid].length - 1) // snake tail
         tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 0;
 
+<<<<<<< HEAD
       if (tetris.snake_dirs[snakeid][i] == 0) {
         tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
       } else if (tetris.snake_dirs[snakeid][i] == 1) {
@@ -575,60 +612,121 @@ var tetris = {
       }
 
       if (i == 0) // head
+=======
+      if (i == 0) {
+        if (tetris.snake_dirs[snakeid][i] == 0) {
+          tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
+        } else if (tetris.snake_dirs[snakeid][i] == 1) {
+          tetris.display_snake[snakeid][i].setY(curY + tetris.block_width);
+        } else if (tetris.snake_dirs[snakeid][i] == 2) {
+          tetris.display_snake[snakeid][i].setX(curX - tetris.block_width);
+        } else if (tetris.snake_dirs[snakeid][i] == 3) {
+          tetris.display_snake[snakeid][i].setY(curY - tetris.block_width);
+        }
+
+>>>>>>> 06e5aacd1a79ada0cf02fb422e5c3683a0ce50be
         tetris.snake_dirs[snakeid][i] = tetris.head_dir[snakeid];
-      else
-        tetris.snake_dirs[snakeid][i] = tetris.snake_dirs[snakeid][i - 1];
 
-      curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
-      curY = tetris.display_snake[snakeid][i].getAbsolutePosition().y;
+        curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
+        curY = tetris.display_snake[snakeid][i].getAbsolutePosition().y;
 
-      // Update map
-      if (i == 0) { // snake head
-        // alert(Math.floor(curY / tetris.block_width) + ', ' + Math.floor(curX / tetris.block_width) + ', ' + tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)]);
         if (tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] == -1) {
           // Eat target
           tetris.snake_eat(snakeid, tail_x, tail_y, tail_dir);
         }
-        tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 1;
+
+        // if (tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] != undefined) {
+        tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = snakeid;
+        // }
+
+      } else {
+        var next_x = tetris.display_snake[snakeid][i - 1].getAbsolutePosition().x;
+        var next_y = tetris.display_snake[snakeid][i - 1].getAbsolutePosition().y;
+
+        tetris.display_snake[snakeid][i].setX(next_x);
+        tetris.display_snake[snakeid][i].setY(next_y);
+
+        tetris.snake_dirs[snakeid][i] = tetris.snake_dirs[snakeid][i - 1];
       }
+
+
     }
 
-    if (tetris.display_snake[snakeid].length <= tetris.snake_imgs[snakeid].length) {
-      tetris.display_snake[snakeid][tetris.display_snake[snakeid].length] = new Kinetic.Circle({
-        x: head_in_x,
-        y: head_in_y,
-        radius: tetris.block_width / (2 * tetris.scale) - 2,
-        fillPatternImage: head_in_img,
-        stroke: tetris.color_mappings[snakeid % 5],
-        strokeWidth: 3
-      });
-      tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
-      tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1].setScale(tetris.scale);
-      tetris.layer_snake.add(tetris.display_snake[snakeid][tetris.display_snake[snakeid].length - 1]);
-      tetris.snake_dirs[snakeid][tetris.display_snake[snakeid].length - 1] = head_in_dir;
-      tetris.map[Math.floor(head_in_y / tetris.block_width)][Math.floor(head_in_x / tetris.block_width)] = 1;
-    }
+    // Check whether there are snakes coming
+    for (var key in tetris.snake_coming) {
+      if (tetris.snake_coming[key] != undefined && tetris.snake_coming[key] == snakeid) {
+        // Snake id: tetris.snake_coming[key], Snake index: tetris.snake_coming_index[key]
+        var i = tetris.snake_coming[key]; // snake id
+        var j = tetris.snake_coming_index[key]; // snake index
+        var coming_x;
+        if (Math.floor(key / (tetris.rows - 1)) == 0) {
+          coming_x = tetris.block_width / 2;
+          tetris.map[key % (tetris.rows - 1)][0] = i;
+        } else {
+          coming_x = tetris.cols * tetris.block_width - tetris.block_width / 2;
+          tetris.map[key % (tetris.rows - 1)][tetris.cols - 1] = i;
+        }
+        var coming_y = (key % (tetris.rows - 1)) * tetris.block_width + tetris.block_width / 2;
+        var coming_img = document.getElementById(tetris.snake_imgs[i][j]);
 
-    tetris.show_block(snakeid);
+        if (tetris.display_snake[i][j + 1] == undefined) { // If not existed
+          tetris.display_snake[i][j + 1] = new Kinetic.Circle({
+            x: coming_x,
+            y: coming_y,
+            radius: tetris.block_width / (2 * tetris.scale) - 2,
+            fillPatternImage: coming_img,
+            stroke: tetris.color_mappings[i % tetris.color_variations],
+            strokeWidth: 3
+          });
+          tetris.display_snake[i][j + 1].setFillPatternOffset(- tetris.block_width / (2 * tetris.scale), tetris.block_width / (2 * tetris.scale));
+          tetris.display_snake[i][j + 1].setScale(tetris.scale);
+          tetris.layer_snake.add(tetris.display_snake[i][j + 1]);
+        } else { // If existed
+          tetris.display_snake[i][j + 1].setX(coming_x);
+          tetris.display_snake[i][j + 1].setY(coming_y);
+        }
+        tetris.snake_dirs[i][j + 1] = tetris.snake_dirs[i][j];
 
+<<<<<<< HEAD
     if(tetris.isLeaving[snakeid] == true){
       tetris.start_index[snakeid] ++;
       if(tetris.start_index[snakeid] == tetris.display_snake[snakeid].length){
         tetris.remove_snake_on_this_screen(snakeid);
         }
       }
+=======
+        // Increase index
+        tetris.snake_coming_index[key]++;
+        if (tetris.snake_coming_index[key] >= tetris.snake_imgs[i].length) {
+          tetris.snake_coming[key] = undefined;
+          tetris.snake_coming_index[key] = undefined;
+        }
+      }
+    }
+
+    tetris.show_block(snakeid);
+
+    // if(tetris.isLeaving[snakeid] == true){
+    //   tetris.start_index[snakeid] ++;
+    //   if(tetris.start_index[snakeid] == tetris.display_snake[snakeid].length){
+    //     tetris.remove_snake_on_this_screen(snakeid);
+    //   }
+    // }
+
+    return true;
+>>>>>>> 06e5aacd1a79ada0cf02fb422e5c3683a0ce50be
   },
 
   show_block: function (snakeid) {
-    for (var i = tetris.start_index[snakeid]; i < tetris.display_snake[snakeid].length; i++) {
-      tetris.display_snake[snakeid][i].show();
-    }
+    // for (var i = tetris.start_index[snakeid]; i < tetris.display_snake[snakeid].length; i++) {
+    //   tetris.display_snake[snakeid][i].show();
+    // }
     tetris.layer_snake.draw();
   },
 
-  remove_snake_on_this_screen: function(snakeid) {
-    //clearTimeout(tetris.timeout_func[snakeid]);
-  },
+  // remove_snake_on_this_screen: function(snakeid) {
+  //   //clearTimeout(tetris.timeout_func[snakeid]);
+  // },
 
   change_head: function(head_device) {
     tetris.snake_head = head_device;
@@ -638,7 +736,7 @@ var tetris = {
     tetris.messages.innerHTML = texte;
     setTimeout(function(){
       tetris.messages.innerHTML = '';
-    }, 500);
+    }, 200);
   },
 
   move_left: function () {
