@@ -335,7 +335,7 @@ var tetris = {
       }
     }
     return cnt;
-  }
+  },
 
   generate_target: function () {
     // Generate a random number
