@@ -49,9 +49,10 @@ var tetris = {
   screen_width: 0,
   screen_height: 0,
   init_len: 1,
+  // -1: target, 0: empty
   map: [],
 
-
+  initial_speed: 500,
 
   // touch/finger controls
   last_pos_x: 0,
@@ -61,7 +62,7 @@ var tetris = {
   finger_lock: false,
 
   // id, left and right
-  self_id: 0,
+  self_id: 1,
   left_id: undefined,
   right_id: undefined,
   color_mappings: { 0: 'white', 1: 'blue', 2: 'red', 3: 'green', 4: 'yellow', 5: 'gray' },
@@ -205,7 +206,7 @@ var tetris = {
 
     setTimeout(function(){
       tetris.snake_move(snake.snakeid);
-    },1000);
+    },tetris.initial_speed);
   },
 
   init_snake: function () {
@@ -279,7 +280,7 @@ var tetris = {
     tetris.update_snake_status(snakeid);
 
     // clean map for snake id
-    for (i = 0; i < tetris.rows - 1; i++) {
+    for (i = 0; i < tetris.length; i++) {
       for (j = 0; j < tetris.cols; j++) {
         if (tetris.map[i][j] == snakeid) {
           tetris.map[i][j] = 0;
@@ -403,7 +404,7 @@ var tetris = {
     tetris.update_block(snakeid);
     tetris.timeout_func[snakeid] = setTimeout(function () {
       tetris.snake_move(snakeid);
-    }, 1000);
+    }, tetris.initial_speed);
   },
 
   test_wallbreak: function () {
@@ -467,23 +468,44 @@ var tetris = {
     });
   },
 
-  edge_safe: function(direction, snakeid) {
+  next_position: function(direction, snakeid) {
+    var position;
+    var x_position = tetris.display_snake[snakeid][0].getAbsolutePosition().x;
+    var y_position = tetris.display_snake[snakeid][0].getAbsolutePosition().y;
     // going to right
     if(direction == 0)
-      return tetris.display_snake[snakeid][0].getAbsolutePosition().x + tetris.block_width < tetris.block_width * tetris.cols;
+      position = tetris.map_position(x_position + tetris.block_width, y_position);
     else if (direction == 1)  // going down
-      return tetris.display_snake[snakeid][0].getAbsolutePosition().y + tetris.block_width < tetris.block_width * (tetris.rows - 1);
+      position = tetris.map_position(x_position, y_position + tetris.block_width);
     else if (direction == 2)  // going left
-      return tetris.display_snake[snakeid][0].getAbsolutePosition().x - tetris.block_width > 0;
+      position = tetris.map_position(x_position - tetris.block_width, y_position);
     else  // going top
-      return tetris.display_snake[snakeid][0].getAbsolutePosition().y - tetris.block_width > 0;     
+      position = tetris.map_position(x_position, y_position - tetris.block_width); 
+    return tetris.coordinate_info(position[0], position[1]);
   },
 
+  map_position: function(x, y) {
+    var position = new Array();
+    position.push(Math.floor(x / tetris.block_width));
+    position.push(Math.floor(y / tetris.block_width));
+    return position;
+  },
+
+  // -2: edge, -1: target, 0: empty, otherwise: snakeid
+  coordinate_info: function(x_index, y_index) {
+    // hitting edge
+    if(x_index < 0 || y_index < 0 || x_index >= tetris.cols || y_index >= tetris.map.length)
+      return -2;
+    // on map
+    return tetris.map[y_index][x_index];
+  },
 
   update_block: function (snakeid) {
     var direction = tetris.snake_dirs[snakeid][0];
     var i;
-    if(!tetris.edge_safe(direction, snakeid)) {
+    var next_position = tetris.next_position(direction, snakeid);
+    // hitting edge
+    if(next_position == -2) {
       if ( tetris.right_id != undefined && direction == 0) {
         if(tetris.isLeaving[snakeid] == false){
             tetris.isLeaving[snakeid] = true;
@@ -502,6 +524,14 @@ var tetris = {
       // this snake is dead
       else {
         tetris.kill_snake(snakeid);
+      }
+    // hit with snake
+    } else if(next_position > 0) {
+      
+      if(next_position == snakeid) {
+        alert("You hit yourself: " + snakeid);
+      } else {
+        alert("hit: "  + next_position);
       }
     }
 
@@ -531,12 +561,13 @@ var tetris = {
     // Update snake position
     for (var i = tetris.display_snake[snakeid].length - 1; i >= tetris.start_index[snakeid]; i--) {
 
-      // Update map
-      if (i == tetris.display_snake[snakeid].length - 1) // snake tail
-        tetris.map[Math.floor(tetris.display_snake[snakeid][i].getAbsolutePosition().y / tetris.block_width)][Math.floor(tetris.display_snake[snakeid][i].getAbsolutePosition().x / tetris.block_width)] = 0;
 
       var curX = tetris.display_snake[snakeid][i].getAbsolutePosition().x;
       var curY = tetris.display_snake[snakeid][i].getAbsolutePosition().y;
+      // Update map
+      if (i == tetris.display_snake[snakeid].length - 1) // snake tail
+        tetris.map[Math.floor(curY / tetris.block_width)][Math.floor(curX / tetris.block_width)] = 0;
+
 
       if (tetris.snake_dirs[snakeid][i] == 0) {
         tetris.display_snake[snakeid][i].setX(curX + tetris.block_width);
@@ -548,7 +579,7 @@ var tetris = {
         tetris.display_snake[snakeid][i].setY(curY - tetris.block_width);
       }
 
-      if (i == 0)
+      if (i == 0) // head
         tetris.snake_dirs[snakeid][i] = tetris.head_dir[snakeid];
       else
         tetris.snake_dirs[snakeid][i] = tetris.snake_dirs[snakeid][i - 1];
