@@ -32,7 +32,7 @@ $(function(){
 	});
 
 	socket.on('generate_new_food',function(data){
-		
+		console.log('generate_new_food');
 		var newFood = tetris.generate_target();
 		var new_pic_id = newFood.new_pic_id;
 		var pic_src = newFood.new_pic_src;
@@ -52,7 +52,7 @@ $(function(){
 		var tail_index = tetris.findTailIndex(snake_id);
 		var new_tail_index = tail_index + 1;
 
-		var tail = tetris.display_snake[snakeid][tail_index];
+		var tail = tetris.display_snake[snake_id][tail_index];
 		var tail_x = tail.getX();
 		var tail_y = tail.getY();
 		if( tail != undefined && tail_x > 0 &&  tail_x < tetris.screen_width && tail_y > 0 && tail_y < tetris.screen_height ) {
@@ -62,20 +62,21 @@ $(function(){
 		        y: tail_y,
 		        radius: tetris.block_width / (2 * tetris.scale) - 2,
 		        fillPatternImage: tail_img,
-		        stroke: tetris.color_mappings[snakeid % 5],
+		        stroke: tetris.color_mappings[snake_id % 5],
 		        strokeWidth: 3
 		      });
 		}
 	});
 
 	socket.on('new_food_generated',function(data){
+		console.log('new image received!');
 		var pic_id = data.pic_id;
 		var pic_src = data.pic_src;
 		//add ( download ) the photo from the src. add it to hidden area
 		var new_html_code = "<img id=\"" + pic_id +"\" style=\"display:none\" align=\"baseline\" src=\"" + pic_src + "\"></a>";
 		ids[cnt] = pic_id;
 		cnt ++;
-		document.getElementById("connectionsdata").getElementByTag('ul').innerHTML += new_html_code;
+		document.getElementById("connectionsdata").getElementsByTagName('ul')[0].innerHTML += new_html_code;
 	});
 
 	socket.on('coming_control_signal',function(data){
