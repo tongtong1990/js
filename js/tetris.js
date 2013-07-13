@@ -220,10 +220,12 @@ var tetris = {
       }
     }
 
+    tetris.show_block(snake.snakeid);
+
     if(tetris.timeout_func[snake.snakeid] == undefined){
       setTimeout(function(){
         tetris.snake_move(snake.snakeid);
-      },200);
+      },tetris.initial_speed);
     }
   },
 
