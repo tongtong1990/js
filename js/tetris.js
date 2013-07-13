@@ -208,7 +208,7 @@ var tetris = {
     if(tetris.timeout_func[snake.snakeid] == undefined){
       setTimeout(function(){
         tetris.snake_move(snake.snakeid);
-      },1000);
+      },200);
     }
 
   },
@@ -328,6 +328,7 @@ var tetris = {
 
   generate_target: function () {
     // Generate a random number
+    console.log(Date.now() + " go into generate target");
     var rand = Math.floor(Math.random() * cnt);
     // Get image
     tetris.target_id = ids[rand];
@@ -335,7 +336,7 @@ var tetris = {
 
     // Generate target
     var snake_len = tetris.display_snake[tetris.self_id].length;
-    var target_index = Math.floor(Math.random() * (tetris.rows - 1) * tetris.cols - snake_len);
+    var target_index = Math.floor(Math.random() * ((tetris.rows - 1) * tetris.cols - snake_len));
     var index_cnt = 0;
     for (var i = 0; i < tetris.rows - 1; i++) {
       for (var j = 0; j < tetris.cols; j++) {
@@ -650,7 +651,7 @@ var tetris = {
     tetris.messages.innerHTML = texte;
     setTimeout(function(){
       tetris.messages.innerHTML = '';
-    }, 500);
+    }, 200);
   },
 
   move_left: function () {
