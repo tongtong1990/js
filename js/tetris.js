@@ -185,11 +185,13 @@ var tetris = {
           stroke: tetris.color_mappings[snake.snakeid % tetris.color_variations],
           strokeWidth: 3
       });
+
       tetris.layer_snake.add(tetris.display_snake[snake.snakeid][0]);
       tetris.snake_dirs[snake.snakeid][0] = 0;
       tetris.map[Math.floor(snake.pos/tetris.block_width)][0] = snake.snakeid;
       tetris.head_dir[snake.snakeid] = 0;
-    }else{
+    
+    } else {
       tetris.display_snake[snake.snakeid][0] = new Kinetic.Circle({
           x: tetris.block_width * tetris.cols - tetris.block_width / 2,
           y: snake.pos,
@@ -197,10 +199,12 @@ var tetris = {
           stroke: tetris.color_mappings[snake.snakeid % tetris.color_variations],
           strokeWidth: 3
       });
+      
       tetris.layer_snake.add(tetris.display_snake[snake.snakeid][0]);
       tetris.snake_dirs[snake.snakeid][0] = 2;
       tetris.map[Math.floor(snake.pos/tetris.block_width)][tetris.cols-1] = snake.snakeid;
       tetris.head_dir[snake.snakeid] = 2;
+
     }
     tetris.display_snake[snake.snakeid][0].setFill(tetris.color_mappings[snake.snakeid % tetris.color_variations]);
     tetris.display_snake[snake.snakeid][0].setScale(tetris.scale);
@@ -267,7 +271,7 @@ var tetris = {
       tetris.alive_snakes.splice(index, 1);
       // add to dead_snakes
       tetris.dead_snakes.push(dead_snake_id);
-      kill_snake(dead_snake_id);
+      tetris.kill_snake(dead_snake_id);
       console.log(dead_snake_id + " is dead");
     }
 
@@ -277,13 +281,10 @@ var tetris = {
 
   },
 
-
-
   kill_snake: function(snakeid) {
     // update snake status
-    
     var i, j, element_id, element, index;
-    alert(tetris.self_id + " killing " + snakeid);
+    console.log("sending kill: " + snakeid);
     send_dead_id(snakeid);
     tetris.update_snake_status(snakeid);
 
